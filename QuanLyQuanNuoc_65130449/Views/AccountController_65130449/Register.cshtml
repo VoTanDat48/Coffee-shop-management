@@ -1,0 +1,88 @@
+﻿@model QuanLyQuanNuoc_65130449.Models.KhachHang
+@{
+    ViewBag.Title = "Đăng ký";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Đăng ký tài khoản</h2>
+
+        @using (Html.BeginForm("Register", "AccountController_65130449", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-red-600 mb-4" })
+
+            <div class="mb-4">
+                <label>Họ và Tên</label>
+                
+                @Html.TextBoxFor(m => m.HoTen, new { @class = "w-full border px-3 py-2 rounded-lg" })
+                @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-red-600" })
+            </div>
+
+            <div class="mb-4">
+                <label>Số Điện Thoại</label>
+                
+                @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "w-full border px-3 py-2 rounded-lg" })
+                @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-red-600" })
+            </div>
+
+            <div class="mb-4">
+                @Html.LabelFor(m => m.Email)
+                @Html.TextBoxFor(m => m.Email, new { @class = "w-full border px-3 py-2 rounded-lg" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-red-600" })
+            </div>
+
+            <div class="mb-4">
+                <label>Tên Đăng Nhập</label>
+                
+                @Html.TextBoxFor(m => m.TenDangNhap, new { @class = "w-full border px-3 py-2 rounded-lg" })
+                @Html.ValidationMessageFor(m => m.TenDangNhap, "", new { @class = "text-red-600" })
+            </div>
+
+            <div class="mb-4">
+                <label>Mật khẩu</label>
+                
+                @Html.PasswordFor(m => m.MatKhau, new { @class = "w-full border px-3 py-2 rounded-lg", id = "MatKhau" })
+                @Html.ValidationMessageFor(m => m.MatKhau, "", new { @class = "text-red-600" })
+            </div>
+
+            <div class="mb-6">
+                <label>Xác nhận mật khẩu</label>
+                <input type="password" name="XacNhanMatKhau" id="XacNhanMatKhau" class="w-full border px-3 py-2 rounded-lg" />
+                @Html.ValidationMessage("XacNhanMatKhau", "", new { @class = "text-red-600" })
+            </div>
+
+            <div class="mb-4 flex items-center">
+                <input type="checkbox" id="ShowPassword" class="mr-2" />
+                <label for="ShowPassword" class="text-gray-700">Hiển thị mật khẩu</label>
+            </div>
+
+            <button type="submit" class="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium">
+                Đăng ký
+            </button>
+        }
+
+        <div class="mt-4 text-center">
+            <span>Bạn đã có tài khoản?</span>
+            <a href="@Url.Action("Login", "AccountController_65130449")" class="text-purple-600 font-medium">Đăng nhập</a>
+        </div>
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        document.getElementById('ShowPassword').addEventListener('change', function () {
+            var matKhau = document.getElementById('MatKhau');
+            var xacNhan = document.getElementById('XacNhanMatKhau');
+            if (this.checked) {
+                matKhau.type = 'text';
+                xacNhan.type = 'text';
+            } else {
+                matKhau.type = 'password';
+                xacNhan.type = 'password';
+            }
+        });
+    </script>
+}
+

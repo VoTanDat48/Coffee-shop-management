@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Quán Nước 65130449</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+    <!-- Header luôn nằm trên cùng -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+
+            <!-- Logo -->
+            <a href="@Url.Action("Index", "TrangChuController_65130449")" class="flex items-center space-x-2">
+                <div class="w-9 h-9 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">Q</span>
+                </div>
+                <h1 class="text-xl font-bold text-gray-800">Quán Nước 65130449</h1>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="flex items-center space-x-6">
+                <!-- Trang Chủ -->
+                <a href="@Url.Action("Index", "TrangChuController_65130449")"
+                   class="text-gray-700 hover:text-purple-600 font-medium">
+                    <i class="fas fa-home mr-1"></i>Trang chủ
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="flex-1 w-full max-w-md mx-auto mt-6 px-4">
+        @RenderBody()
+    </main>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,53 @@
+﻿@model QuanLyQuanNuoc_65130449.Models.KhachHang
+@{
+    ViewBag.Title = "Hồ sơ của tôi";
+    Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
+}
+
+<div class="min-h-screen bg-gray-100 flex justify-center items-start py-12">
+    <div class="max-w-md w-full">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Hồ sơ của tôi</h2>
+
+        @if (Model != null)
+        {
+            <div class="bg-white shadow-lg rounded-2xl p-6">
+                <!-- Thông tin khách hàng -->
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Họ tên:</span>
+                        <span class="text-gray-900">@Model.HoTen</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Số điện thoại:</span>
+                        <span class="text-gray-900">@Model.SoDienThoai</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Email:</span>
+                        <span class="text-gray-900">@Model.Email</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-700">Tên đăng nhập:</span>
+                        <span class="text-gray-900">@Model.TenDangNhap</span>
+                    </div>
+                </div>
+
+                <!-- Nút chỉnh sửa -->
+                <div class="mt-6 text-center">
+                    <a href="@Url.Action("EditAccount", "KhachHangController_65130449")"
+                       class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition duration-200">
+                        Chỉnh sửa thông tin
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-red-600 font-medium mt-4">
+                Thông tin khách hàng không tồn tại hoặc bạn chưa đăng nhập.
+            </p>
+        }
+
+        
+
+    </div>
+</div>

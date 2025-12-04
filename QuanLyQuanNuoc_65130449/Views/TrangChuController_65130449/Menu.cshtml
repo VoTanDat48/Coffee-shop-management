@@ -1,0 +1,108 @@
+﻿
+@model IEnumerable<QuanLyQuanNuoc_65130449.Models.SanPham>
+@{
+    ViewBag.Title = "Menu";
+    Layout = "~/Views/Shared/_LayoutTrangChu.cshtml";
+    var categories = ViewBag.Categories as List<QuanLyQuanNuoc_65130449.Models.DanhMuc>;
+    string search = ViewBag.Search as string;
+    int? selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+}
+
+<div class="max-w-6xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Thực đơn</h2>
+
+    <!-- Thanh tìm kiếm + lọc danh mục -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
+        @using (Html.BeginForm("Menu", "TrangChuController_65130449", FormMethod.Get, new { @class = "grid grid-cols-1 md:grid-cols-3 gap-4 items-end" }))
+        {
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm đồ uống</label>
+                <input type="text"
+                       name="search"
+                       value="@search"
+                       placeholder="Nhập tên sản phẩm..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phân loại</label>
+                <select name="categoryId"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <option value="">Tất cả danh mục</option>
+                    @if (categories != null)
+                    {
+                        foreach (var dm in categories)
+                        {
+                            <option value="@dm.MaDanhMuc" @(selectedCategoryId == dm.MaDanhMuc ? "selected" : "")>
+                                @dm.TenDanhMuc
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="submit"
+                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition">
+                    <i class="fas fa-search mr-2"></i> Lọc
+                </button>
+                <a href="@Url.Action("Menu", "TrangChuController_65130449")"
+                   class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                    Xóa lọc
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Danh sách sản phẩm dạng Grid (tương tự Index) -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach (var sp in Model)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg hover:-translate-y-1">
+                    <div class="h-52 bg-gray-100">
+                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                             alt="@sp.TenSP"
+                             class="w-full h-full object-cover" />
+                    </div>
+
+                    <div class="p-5 space-y-3">
+                        <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 text-2xl font-bold">
+                                @String.Format("{0:N0}", sp.DonGia)₫
+                            </span>
+
+                            @if (!Request.IsAuthenticated)
+                            {
+                                <!-- Chưa đăng nhập: chuyển sang trang Login -->
+                                <a href="@Url.Action("Login", "AccountController_65130449", new { returnUrl = Request.RawUrl })"
+                                   class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 font-medium">
+                                    <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
+                                </a>
+                            }
+                            else
+                            {
+                                <!-- Đã đăng nhập: sau này chuyển sang logic đặt hàng/giỏ hàng -->
+                                <button class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 font-medium cursor-not-allowed"
+                                        title="Chức năng đặt hàng sẽ được bổ sung sau">
+                                    <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-14 bg-yellow-50 rounded-2xl border border-yellow-200">
+            <div class="text-5xl mb-4">🥤</div>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-2">Không tìm thấy sản phẩm nào</h3>
+            <p class="text-gray-500 text-lg">Hãy thử lại với từ khóa hoặc danh mục khác nhé.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.SanPham>
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
+}
+
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-purple-600 to-purple-800 rounded-2xl p-8 mb-12 text-white">
+    <div class="max-w-2xl">
+        <h1 class="text-4xl font-bold mb-4">Chào mừng đến với Quán Nước 65130449</h1>
+        <p class="text-xl mb-6">Thức uống tươi mới mỗi ngày - Giao hàng nhanh chóng</p>
+        <a href="@Url.Action("Menu", "KhachHangController_65130449")"
+           class="inline-block bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100">
+            Xem thực đơn ngay
+        </a>
+    </div>
+</div>
+
+<!-- Sản phẩm nổi bật -->
+<div class="mb-12">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Sản phẩm nổi bật</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach (var sp in Model)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg hover:-translate-y-1">
+
+                    <!-- Ảnh sản phẩm -->
+                    <div class="h-52 bg-gray-100">
+                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                             alt="@sp.TenSP"
+                             class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Nội dung -->
+                    <div class="p-5 space-y-4">
+                        <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 text-2xl font-bold">
+                                @String.Format("{0:N0}", sp.DonGia)₫
+                            </span>
+
+                            <!-- Nút Đặt ngay -->
+                            @if (Session["UserRole"]?.ToString() == "khachhang")
+                            {
+                                <a href="@Url.Action("AddToCart", "Cart_65130449", new { productId = sp.MaSP })"
+                                   class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition font-medium">
+                                    <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Login", "AccountController_65130449")"
+                                   class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition font-medium">
+                                    <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-12 bg-yellow-50 rounded-lg">
+            <div class="text-4xl mb-4">☕</div>
+            <h3 class="text-xl font-medium text-gray-700 mb-2">Đang cập nhật menu</h3>
+            <p class="text-gray-500">Vui lòng quay lại sau!</p>
+        </div>
+    }
+</div>

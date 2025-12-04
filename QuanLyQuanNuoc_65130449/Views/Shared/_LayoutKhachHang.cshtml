@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Quán Nước 65130449</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="@Url.Action("Index", "KhachHangController_65130449")" class="flex items-center">
+                        <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white text-xl font-bold">Q</span>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800">Quán Nước 65130449</span>
+                    </a>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex items-center space-x-6">
+                    <!-- Trang chủ -->
+                    <a href="@Url.Action("Index", "KhachHangController_65130449")"
+                       class="text-gray-700 hover:text-purple-600 font-medium">
+                        <i class="fas fa-home mr-1"></i>Trang chủ
+                    </a>
+
+                    <!-- Thực đơn -->
+                    <a href="@Url.Action("Menu", "TrangChuController_65130449")"
+                       class="text-gray-700 hover:text-purple-600 font-medium">
+                        <i class="fas fa-utensils mr-1"></i>Menu
+                    </a>
+
+                    <!-- Giỏ hàng -->
+                    <a href="@Url.Action("Cart", "Home_65130449")"
+                       class="text-gray-700 hover:text-purple-600 font-medium relative">
+                        <i class="fas fa-shopping-cart mr-1"></i>Giỏ hàng
+                        @if (Session["CartCount"] != null && (int)Session["CartCount"] > 0)
+                        {
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                @Session["CartCount"]
+                            </span>
+                        }
+                    </a>
+
+                    <!-- Tài khoản hoặc Đăng nhập -->
+                    <div class="relative">
+                        @if (Session["UserRole"]?.ToString() == "khachhang")
+                        {
+                            <!-- Hiển thị tên tài khoản -->
+                            <button id="userMenuButton"
+                                    class="flex items-center space-x-2 text-gray-700 hover:text-purple-600 font-medium focus:outline-none">
+                                <i class="fas fa-user-circle text-lg"></i>
+                                <span>@Session["UserName"]</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+
+                            <!-- Menu dropdown -->
+                            <div id="userDropdown"
+                                 class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                <a href="@Url.Action("MyAccount", "KhachHangController_65130449")"
+                                   class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user mr-2"></i>Hồ sơ
+                                </a>
+                                <a href="@Url.Action("MyOrders", "KhachHangController_65130449")"
+                                   class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-receipt mr-2"></i>Đơn hàng
+                                </a>
+                                <div class="border-t my-1"></div>
+                                @using (Html.BeginForm("Index", "TrangChuController_65130449", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                                    </button>
+                                }
+                            </div>
+
+                            <!-- Script đơn giản để toggle dropdown -->
+                            <script>
+                                const userBtn = document.getElementById('userMenuButton');
+                                const userDropdown = document.getElementById('userDropdown');
+
+                                userBtn.addEventListener('click', function () {
+                                    userDropdown.classList.toggle('hidden');
+                                });
+
+                                // Đóng dropdown khi click ra ngoài
+                                document.addEventListener('click', function (e) {
+                                    if (!userBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                                        userDropdown.classList.add('hidden');
+                                    }
+                                });
+                            </script>
+                        }
+                        else
+                        {
+                            <!-- Nút đăng nhập -->
+                            <a href="@Url.Action("Login", "AccountController_65130449")"
+                               class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium">
+                                Đăng nhập
+                            </a>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <p>&copy; @DateTime.Now.Year - Quán Nước 65130449. All rights reserved.</p>
+                <p class="mt-2 text-gray-400">Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</p>
+                <p class="text-gray-400">Hotline: 0909 123 456</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,71 @@
+﻿@model List<QuanLyQuanNuoc_65130449.Models.SanPham>
+@{
+    ViewBag.Title = "Trang Chủ";
+    Layout = "~/Views/Shared/_LayoutTrangChu.cshtml";
+}
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+
+    <!-- Tiêu đề -->
+    <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">Món Nổi Bật</h2>
+        <p class="text-gray-500 text-lg">Top những đồ uống được khách hàng ưa thích nhất</p>
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            @foreach (var sp in Model)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg hover:-translate-y-1">
+
+                    <!-- Ảnh sản phẩm -->
+                    <div class="h-52 bg-gray-100">
+                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                             alt="@sp.TenSP"
+                             class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Nội dung -->
+                    <div class="p-5 space-y-4">
+
+                        <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 text-2xl font-bold">
+                                @String.Format("{0:N0}", sp.DonGia)₫
+                            </span>
+
+                            <a href="@Url.Action("Login", "AccountController_65130449", new { id = sp.MaSP })"
+                               class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition font-medium">
+                                <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        <!-- Nút xem tất cả -->
+        <div class="text-center mt-14">
+            <a href="@Url.Action("Menu", "TrangChuController_65130449")"
+               class="inline-flex items-center px-7 py-3 rounded-xl text-lg font-medium text-white bg-purple-600 hover:bg-purple-700 transition">
+                Xem toàn bộ Menu
+                <i class="fa fa-angle-right ml-2 text-white"></i>
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Trường hợp không có sản phẩm -->
+        <div class="text-center py-14 bg-yellow-50 rounded-2xl border border-yellow-200">
+            <div class="text-5xl mb-4">🥤</div>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-2">Menu đang được cập nhật</h3>
+            <p class="text-gray-500 text-lg">Quay lại sau để xem nhiều món hấp dẫn nhé!</p>
+        </div>
+    }
+</div>
