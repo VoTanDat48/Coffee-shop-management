@@ -17,7 +17,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="@Url.Action("Index", "KhachHangController_65130449")" class="flex items-center">
-                        <div class="w-10 h-10 bg-sky-600 rounded-lg flex items-center justify-center mr-3">
+                        <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
                             <span class="text-white text-xl font-bold">Q</span>
                         </div>
                         <span class="text-2xl font-bold text-gray-800">Quán Nước 65130449</span>
@@ -28,19 +28,19 @@
                 <div class="flex items-center space-x-6">
                     <!-- Trang chủ -->
                     <a href="@Url.Action("Index", "KhachHangController_65130449")"
-                       class="text-gray-700 hover:text-sky-600 font-medium">
+                       class="text-gray-700 hover:text-purple-600 font-medium">
                         <i class="fas fa-home mr-1"></i>Trang chủ
                     </a>
 
                     <!-- Thực đơn -->
-                    <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
-                       class="text-gray-700 hover:text-sky-600 font-medium">
+                    <a href="@Url.Action("Menu", "TrangChuController_65130449")"
+                       class="text-gray-700 hover:text-purple-600 font-medium">
                         <i class="fas fa-utensils mr-1"></i>Menu
                     </a>
 
                     <!-- Giỏ hàng -->
                     <a href="@Url.Action("Cart", "Home_65130449")"
-                       class="text-gray-700 hover:text-sky-600 font-medium relative">
+                       class="text-gray-700 hover:text-purple-600 font-medium relative">
                         <i class="fas fa-shopping-cart mr-1"></i>Giỏ hàng
                         @if (Session["CartCount"] != null && (int)Session["CartCount"] > 0)
                         {
@@ -56,7 +56,7 @@
                         {
                             <!-- Hiển thị tên tài khoản -->
                             <button id="userMenuButton"
-                                    class="flex items-center space-x-2 text-gray-700 hover:text-sky-600 font-medium focus:outline-none">
+                                    class="flex items-center space-x-2 text-gray-700 hover:text-purple-600 font-medium focus:outline-none">
                                 <i class="fas fa-user-circle text-lg"></i>
                                 <span>@Session["UserName"]</span>
                                 <i class="fas fa-chevron-down text-xs"></i>
@@ -105,7 +105,7 @@
                         {
                             <!-- Nút đăng nhập -->
                             <a href="@Url.Action("Login", "AccountController_65130449")"
-                               class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium shadow-md shadow-emerald-200/70">
+                               class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium">
                                 Đăng nhập
                             </a>
                         }

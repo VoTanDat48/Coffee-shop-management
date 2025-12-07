@@ -12,7 +12,7 @@
     <h2 class="text-3xl font-bold text-gray-800 mb-6">Thực đơn</h2>
 
     <!-- Thanh tìm kiếm + lọc danh mục -->
-    <div class="bg-white rounded-2xl shadow-sm border border-sky-100 p-5 mb-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
         @using (Html.BeginForm("Menu", "TrangChuController_65130449", FormMethod.Get, new { @class = "grid grid-cols-1 md:grid-cols-3 gap-4 items-end" }))
         {
             <div>
@@ -21,13 +21,13 @@
                        name="search"
                        value="@search"
                        placeholder="Nhập tên sản phẩm..."
-                       class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" />
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Phân loại</label>
                 <select name="categoryId"
-                        class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-600">
                     <option value="">Tất cả danh mục</option>
                     @if (categories != null)
                     {
@@ -43,47 +43,35 @@
 
             <div class="flex space-x-3">
                 <button type="submit"
-                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow-md shadow-emerald-200/70">
+                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition">
                     <i class="fas fa-search mr-2"></i> Lọc
                 </button>
                 <a href="@Url.Action("Menu", "TrangChuController_65130449")"
-                   class="inline-flex justify-center items-center px-4 py-2 border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50">
+                   class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
                     Xóa lọc
                 </a>
             </div>
         }
     </div>
 
-    <!-- Danh sách sản phẩm dạng Grid + phân trang -->
+    <!-- Danh sách sản phẩm dạng Grid (tương tự Index) -->
     @if (Model != null && Model.Any())
     {
-        int currentPage = ViewBag.CurrentPage != null ? (int)ViewBag.CurrentPage : 1;
-        int totalPages = ViewBag.TotalPages != null ? (int)ViewBag.TotalPages : 1;
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg-cols-3 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach (var sp in Model)
             {
-                <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden transition hover:shadow-2xl hover:-translate-y-1 hover:border-emerald-300">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg hover:-translate-y-1">
                     <div class="h-52 bg-gray-100">
-                        @if (!string.IsNullOrEmpty(sp.HinhAnh))
-                        {
-                            <img src="@sp.HinhAnh"
-                                 alt="@sp.TenSP"
-                                 class="w-full h-full object-cover" />
-                        }
-                        else
-                        {
-                            <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
-                                 alt="@sp.TenSP"
-                                 class="w-full h-full object-cover" />
-                        }
+                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                             alt="@sp.TenSP"
+                             class="w-full h-full object-cover" />
                     </div>
 
                     <div class="p-5 space-y-3">
                         <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
 
                         <div class="flex justify-between items-center">
-                            <span class="text-sky-500 text-2xl font-bold">
+                            <span class="text-purple-600 text-2xl font-bold">
                                 @String.Format("{0:N0}", sp.DonGia)₫
                             </span>
 
@@ -91,14 +79,14 @@
                             {
                                 <!-- Chưa đăng nhập: chuyển sang trang Login -->
                                 <a href="@Url.Action("Login", "AccountController_65130449", new { returnUrl = Request.RawUrl })"
-                                   class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 font-medium shadow-md shadow-emerald-200/70">
+                                   class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 font-medium">
                                     <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
                                 </a>
                             }
                             else
                             {
                                 <!-- Đã đăng nhập: sau này chuyển sang logic đặt hàng/giỏ hàng -->
-                                <button class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 font-medium cursor-not-allowed shadow-md shadow-emerald-200/70"
+                                <button class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 font-medium cursor-not-allowed"
                                         title="Chức năng đặt hàng sẽ được bổ sung sau">
                                     <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
                                 </button>
@@ -108,70 +96,6 @@
                 </div>
             }
         </div>
-
-        if (totalPages > 1)
-        {
-            <nav aria-label="Pagination" class="flex justify-center mt-8">
-                <ul class="inline-flex items-center -space-x-px">
-                    @{
-                        var routeValues = new System.Web.Routing.RouteValueDictionary
-                        {
-                            { "search", search },
-                            { "categoryId", selectedCategoryId }
-                        };
-                    }
-
-                    <!-- Previous -->
-                    <li>
-                        @if (currentPage > 1)
-                        {
-                            routeValues["page"] = currentPage - 1;
-                            <a href="@Url.Action("Menu", "TrangChuController_65130449", routeValues)"
-                               class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
-                                «
-                            </a>
-                        }
-                        else
-                        {
-                            <span class="px-3 py-2 ml-0 leading-tight text-gray-300 bg-white border border-gray-200 rounded-l-lg">
-                                «
-                            </span>
-                        }
-                    </li>
-
-                    <!-- Page numbers -->
-                    @for (int i = 1; i <= totalPages; i++)
-                    {
-                        routeValues["page"] = i;
-                        bool isActive = i == currentPage;
-                        <li>
-                            <a href="@Url.Action("Menu", "TrangChuController_65130449", routeValues)"
-                               class="px-3 py-2 leading-tight border @(isActive ? "bg-sky-600 text-white border-sky-600" : "bg-white text-gray-500 border-gray-300 hover:bg-gray-100 hover:text-gray-700")">
-                                @i
-                            </a>
-                        </li>
-                    }
-
-                    <!-- Next -->
-                    <li>
-                        @if (currentPage < totalPages)
-                        {
-                            routeValues["page"] = currentPage + 1;
-                            <a href="@Url.Action("Menu", "TrangChuController_65130449", routeValues)"
-                               class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
-                                »
-                            </a>
-                        }
-                        else
-                        {
-                            <span class="px-3 py-2 leading-tight text-gray-300 bg-white border border-gray-200 rounded-r-lg">
-                                »
-                            </span>
-                        }
-                    </li>
-                </ul>
-            </nav>
-        }
     }
     else
     {
