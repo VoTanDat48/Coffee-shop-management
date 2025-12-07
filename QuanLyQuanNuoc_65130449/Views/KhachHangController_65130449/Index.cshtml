@@ -5,12 +5,12 @@
 }
 
 <!-- Hero Section -->
-<div class="bg-gradient-to-r from-purple-600 to-purple-800 rounded-2xl p-8 mb-12 text-white">
+<div class="bg-gradient-to-r from-sky-500 to-emerald-600 rounded-2xl p-8 mb-12 text-white">
     <div class="max-w-2xl">
         <h1 class="text-4xl font-bold mb-4">Chào mừng đến với Quán Nước 65130449</h1>
         <p class="text-xl mb-6">Thức uống tươi mới mỗi ngày - Giao hàng nhanh chóng</p>
-        <a href="@Url.Action("Menu", "KhachHangController_65130449")"
-           class="inline-block bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100">
+        <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
+           class="inline-block bg-white text-sky-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100">
             Xem thực đơn ngay
         </a>
     </div>
@@ -29,9 +29,18 @@
 
                     <!-- Ảnh sản phẩm -->
                     <div class="h-52 bg-gray-100">
-                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
-                             alt="@sp.TenSP"
-                             class="w-full h-full object-cover">
+                        @if (!string.IsNullOrEmpty(sp.HinhAnh))
+                        {
+                            <img src="@sp.HinhAnh"
+                                 alt="@sp.TenSP"
+                                 class="w-full h-full object-cover">
+                        }
+                        else
+                        {
+                            <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                                 alt="@sp.TenSP"
+                                 class="w-full h-full object-cover">
+                        }
                     </div>
 
                     <!-- Nội dung -->
@@ -39,7 +48,7 @@
                         <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
 
                         <div class="flex justify-between items-center">
-                            <span class="text-purple-600 text-2xl font-bold">
+                            <span class="text-sky-500 text-2xl font-bold">
                                 @String.Format("{0:N0}", sp.DonGia)₫
                             </span>
 
@@ -47,14 +56,14 @@
                             @if (Session["UserRole"]?.ToString() == "khachhang")
                             {
                                 <a href="@Url.Action("AddToCart", "Cart_65130449", new { productId = sp.MaSP })"
-                                   class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition font-medium">
+                                   class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 transition font-medium shadow-md shadow-emerald-200/70">
                                     <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
                                 </a>
                             }
                             else
                             {
                                 <a href="@Url.Action("Login", "AccountController_65130449")"
-                                   class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition font-medium">
+                                   class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 transition font-medium shadow-md shadow-emerald-200/70">
                                     <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
                                 </a>
                             }
