@@ -35,8 +35,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             base.Dispose(disposing);
         }
 
-        // Trang Menu: thanh tìm kiếm, phân loại sản phẩm, hiển thị danh sách
-        public ActionResult Menu(string search, int? categoryId)
+        // Trang Menu: thanh tìm kiếm, phân loại sản phẩm, hiển thị danh sách + phân trang
+        public ActionResult Menu(string search, int? categoryId, int page = 1, int pageSize = 9)
         {
             // Chuẩn bị dữ liệu lọc
             ViewBag.Categories = db.DanhMucs
@@ -61,8 +61,19 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 query = query.Where(sp => sp.MaDanhMuc == maDanhMuc);
             }
 
+            // Thông tin phân trang
+            int totalItems = query.Count();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            ViewBag.TotalItems = totalItems;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
             var sanPhams = query
                 .OrderBy(sp => sp.TenSP)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
 
             return View(sanPhams);

@@ -19,7 +19,7 @@
 
             @foreach (var sp in Model)
             {
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg hover:-translate-y-1">
+                <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden transition hover:shadow-2xl hover:-translate-y-1 hover:border-emerald-300">
 
                     <!-- Ảnh sản phẩm -->
                     <div class="h-52 bg-gray-100">
@@ -34,12 +34,12 @@
                         <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
 
                         <div class="flex justify-between items-center">
-                            <span class="text-purple-600 text-2xl font-bold">
+                            <span class="text-sky-500 text-2xl font-bold">
                                 @String.Format("{0:N0}", sp.DonGia)₫
                             </span>
 
                             <a href="@Url.Action("Login", "AccountController_65130449", new { id = sp.MaSP })"
-                               class="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition font-medium">
+                               class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 transition font-medium shadow-md shadow-emerald-200/70">
                                 <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
                             </a>
                         </div>
@@ -53,7 +53,7 @@
         <!-- Nút xem tất cả -->
         <div class="text-center mt-14">
             <a href="@Url.Action("Menu", "TrangChuController_65130449")"
-               class="inline-flex items-center px-7 py-3 rounded-xl text-lg font-medium text-white bg-purple-600 hover:bg-purple-700 transition">
+               class="inline-flex items-center px-7 py-3 rounded-xl text-lg font-medium text-white bg-sky-500 hover:bg-sky-600 transition shadow-md shadow-emerald-200/70">
                 Xem toàn bộ Menu
                 <i class="fa fa-angle-right ml-2 text-white"></i>
             </a>
