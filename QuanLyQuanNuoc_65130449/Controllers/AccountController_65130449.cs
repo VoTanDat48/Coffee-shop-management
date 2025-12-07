@@ -42,7 +42,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 switch (nhanVien.VaiTro)
                 {
                     case 0: // Quản lý/Admin
-                        return RedirectToAction("Dashboard", "Admin"); // Trang quản lý tổng
+                        return RedirectToAction("Index", "AdminController_65130449"); // Trang quản lý tổng
                     case 1: // Nhân viên Duyệt
                         return RedirectToAction("Processing", "Employee"); // Trang duyệt đơn
                     case 2: // Nhân viên Giao hàng

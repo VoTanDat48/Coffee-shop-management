@@ -123,5 +123,48 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             return View(model);
         }
 
+        public ActionResult Menu_KH(string search, int? categoryId, int page = 1, int pageSize = 9)
+        {
+            // Chuẩn bị dữ liệu lọc
+            ViewBag.Categories = db.DanhMucs
+                                   .OrderBy(dm => dm.TenDanhMuc)
+                                   .ToList();
+            ViewBag.Search = search;
+            ViewBag.SelectedCategoryId = categoryId;
+
+            IQueryable<SanPham> query = db.SanPhams;
+
+            // Tìm kiếm theo tên sản phẩm
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string keyword = search.Trim();
+                query = query.Where(sp => sp.TenSP.Contains(keyword));
+            }
+
+            // Lọc theo danh mục
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                int maDanhMuc = categoryId.Value;
+                query = query.Where(sp => sp.MaDanhMuc == maDanhMuc);
+            }
+
+            // Thông tin phân trang
+            int totalItems = query.Count();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            ViewBag.TotalItems = totalItems;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            var sanPhams = query
+                .OrderBy(sp => sp.TenSP)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return View(sanPhams);
+        }
+
     }
 }

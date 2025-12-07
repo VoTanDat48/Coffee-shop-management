@@ -1,0 +1,109 @@
+﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.DanhMuc>
+@{
+    ViewBag.Title = "Quản lý Danh mục";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Thêm danh mục mới</h2>
+    @using (Html.BeginForm("Create_DanhMuc", "AdminController_65130449", FormMethod.Post))
+    {
+        <div class="flex space-x-4">
+            <input type="text" name="TenDanhMuc" placeholder="Nhập tên danh mục" required
+                   class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-lg font-medium shadow-md shadow-emerald-200/70">
+                <i class="fas fa-plus mr-2"></i>Thêm
+            </button>
+        </div>
+    }
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="p-6 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800">Danh sách Danh mục</h2>
+    </div>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên danh mục</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số sản phẩm</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var dm in Model)
+                {
+                    <tr class="hover:bg-gray-50" id="row-@dm.MaDanhMuc">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">@dm.MaDanhMuc</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900" id="name-@dm.MaDanhMuc">@dm.TenDanhMuc</div>
+                            <form method="post" action="@Url.Action("Edit_DanhMuc", "AdminController_65130449")" class="hidden mt-2" id="edit-form-@dm.MaDanhMuc">
+                                <input type="hidden" name="id" value="@dm.MaDanhMuc" />
+                                <div class="flex space-x-2">
+                                    <input type="text" name="TenDanhMuc" value="@dm.TenDanhMuc" required
+                                           class="flex-1 border border-gray-300 rounded px-2 py-1 text-sm" />
+                                    <button type="submit" class="bg-sky-500 text-white px-3 py-1 rounded text-sm">Lưu</button>
+                                    <button type="button" onclick="cancelEdit(@dm.MaDanhMuc)" class="bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm">Hủy</button>
+                                </div>
+                            </form>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">@dm.SanPhams.Count</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="editDanhMuc(@dm.MaDanhMuc)" class="text-sky-600 hover:text-sky-900">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </button>
+                                <form method="post" action="@Url.Action("Delete_DanhMuc", "AdminController_65130449", new { id = dm.MaDanhMuc })" 
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" class="inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">Chưa có danh mục nào</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function editDanhMuc(id) {
+        document.getElementById('name-' + id).classList.add('hidden');
+        document.getElementById('edit-form-' + id).classList.remove('hidden');
+    }
+
+    function cancelEdit(id) {
+        document.getElementById('name-' + id).classList.remove('hidden');
+        document.getElementById('edit-form-' + id).classList.add('hidden');
+    }
+</script>

@@ -23,9 +23,18 @@
 
                     <!-- Ảnh sản phẩm -->
                     <div class="h-52 bg-gray-100">
-                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
-                             alt="@sp.TenSP"
-                             class="w-full h-full object-cover">
+                        @if (!string.IsNullOrEmpty(sp.HinhAnh))
+                        {
+                            <img src="@sp.HinhAnh"
+                                 alt="@sp.TenSP"
+                                 class="w-full h-full object-cover">
+                        }
+                        else
+                        {
+                            <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                                 alt="@sp.TenSP"
+                                 class="w-full h-full object-cover">
+                        }
                     </div>
 
                     <!-- Nội dung -->

@@ -131,6 +131,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController_65130449.cs" />
+    <Compile Include="Controllers\AdminController_65130449.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KhachHangController_65130449.cs" />
     <Compile Include="Controllers\TrangChuController_65130449.cs" />
@@ -262,10 +263,23 @@
     <Content Include="Views\KhachHangController_65130449\MyAccount.cshtml" />
     <Content Include="Views\KhachHangController_65130449\EditAccount.cshtml" />
     <Content Include="Views\TrangChuController_65130449\Menu.cshtml" />
+    <Content Include="Views\KhachHangController_65130449\Menu_KH.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Views\AdminController_65130449\Index.cshtml" />
+    <Content Include="Views\AdminController_65130449\DS_SP.cshtml" />
+    <Content Include="Views\AdminController_65130449\DS_NV.cshtml" />
+    <Content Include="Views\AdminController_65130449\DoanhThu.cshtml" />
+    <Content Include="Views\AdminController_65130449\Create_SP.cshtml" />
+    <Content Include="Views\AdminController_65130449\Edit_SP.cshtml" />
+    <Content Include="Views\AdminController_65130449\DS_DanhMuc.cshtml" />
+    <Content Include="Views\AdminController_65130449\DS_KH.cshtml" />
+    <Content Include="Views\AdminController_65130449\Detail_KH.cshtml" />
+    <Content Include="Views\AdminController_65130449\TimKiemSP.cshtml" />
+    <Content Include="Views\AdminController_65130449\TimKiemNV.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\MenuController_65130449\" />
+    <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

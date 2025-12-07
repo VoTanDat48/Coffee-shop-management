@@ -1,0 +1,368 @@
+﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.NhanVien>
+@{
+    ViewBag.Title = "Quản lý Nhân viên";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Danh sách Nhân viên</h2>
+    <a href="@Url.Action("TimKiemNV", "AdminController_65130449")"
+       class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium shadow-md">
+        <i class="fas fa-search mr-2"></i>Tìm kiếm
+    </a>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Thêm nhân viên mới</h2>
+    @using (Html.BeginForm("Create_NV", "AdminController_65130449", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên</label>
+                <input type="text" name="HoTen" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                <input type="text" name="SoDienThoai" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+                <input type="text" name="TenDangNhap" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                <input type="password" name="MatKhau" id="createMatKhau" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+                <input type="password" name="XacNhanMatKhau" id="createXacNhanMatKhau" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                <span id="createPasswordMatch" class="text-red-600 text-sm hidden">Mật khẩu không khớp!</span>
+            </div>
+            <div class="md:col-span-2">
+                <label class="flex items-center">
+                    <input type="checkbox" id="showPasswordCreate" class="mr-2" onchange="togglePasswordCreate()" />
+                    <span class="text-sm text-gray-700">Hiển thị mật khẩu</span>
+                </label>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
+                <select name="VaiTro" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <option value="0">Nhân viên Duyệt</option>
+                    <option value="1">Nhân viên Giao hàng</option>
+                    
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-lg font-medium shadow-md shadow-emerald-200/70 w-full">
+                    <i class="fas fa-plus mr-2"></i>Thêm nhân viên
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="p-6 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800">Danh sách</h2>
+    </div>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Họ tên</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số điện thoại</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên đăng nhập</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vai trò</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var nv in Model)
+                {
+                    <tr class="hover:bg-gray-50" id="row-@nv.MaNV">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">@nv.MaNV</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900" id="hoten-@nv.MaNV">@nv.HoTen</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500" id="sdt-@nv.MaNV">@nv.SoDienThoai</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500" id="tdn-@nv.MaNV">@nv.TenDangNhap</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs rounded-full
+                                @(nv.VaiTro == 0 ? "bg-purple-100 text-purple-800" : 
+                                  nv.VaiTro == 1 ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800")">
+                                @(nv.VaiTro == 0 ? "Quản lý" : nv.VaiTro == 1 ? "Duyệt" : "Giao hàng")
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="editNhanVien(@nv.MaNV, '@nv.HoTen', '@nv.SoDienThoai', '@nv.TenDangNhap', '@nv.MatKhau', @nv.VaiTro)" 
+                                        class="text-sky-600 hover:text-sky-900">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </button>
+                                <form method="post" action="@Url.Action("Delete_NV", "AdminController_65130449", new { id = nv.MaNV })" 
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?');" class="inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">Chưa có nhân viên nào</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="px-6 py-4 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Hiển thị <span class="font-medium">@((ViewBag.CurrentPage - 1) * ViewBag.PageSize + 1)</span> đến 
+                    <span class="font-medium">@(Math.Min(ViewBag.CurrentPage * ViewBag.PageSize, ViewBag.TotalItems))</span> 
+                    trong tổng <span class="font-medium">@ViewBag.TotalItems</span> nhân viên
+                </div>
+                <div class="flex space-x-2">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <a href="@Url.Action("DS_NV", "AdminController_65130449", new { page = ViewBag.CurrentPage - 1 })"
+                           class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            « Trước
+                        </a>
+                    }
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        if (i == ViewBag.CurrentPage)
+                        {
+                            <span class="px-3 py-2 bg-sky-600 text-white rounded-lg">@i</span>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("DS_NV", "AdminController_65130449", new { page = i })"
+                               class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                @i
+                            </a>
+                        }
+                    }
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <a href="@Url.Action("DS_NV", "AdminController_65130449", new { page = ViewBag.CurrentPage + 1 })"
+                           class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Sau »
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal Edit -->
+<div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Chỉnh sửa nhân viên</h3>
+            <form method="post" action="@Url.Action("Edit_NV", "AdminController_65130449")" id="editForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="MaNV" id="editMaNV" />
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên</label>
+                        <input type="text" name="HoTen" id="editHoTen" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                        <input type="text" name="SoDienThoai" id="editSoDienThoai" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+                        <input type="text" name="TenDangNhap" id="editTenDangNhap" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                        <input type="password" name="MatKhau" id="editMatKhau" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+                        <input type="password" name="XacNhanMatKhau" id="editXacNhanMatKhau" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                        <span id="editPasswordMatch" class="text-red-600 text-sm hidden">Mật khẩu không khớp!</span>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="showPasswordEdit" class="mr-2" onchange="togglePasswordEdit()" />
+                            <span class="text-sm text-gray-700">Hiển thị mật khẩu</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
+                        <select name="VaiTro" id="editVaiTro" required
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="0">Quản lý</option>
+                            <option value="1">Nhân viên Duyệt</option>
+                            <option value="2">Nhân viên Giao hàng</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-4 pt-4">
+                        <button type="submit" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium">
+                            Cập nhật
+                        </button>
+                        <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-medium">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function editNhanVien(maNV, hoTen, soDienThoai, tenDangNhap, matKhau, vaiTro) {
+        document.getElementById('editMaNV').value = maNV;
+        document.getElementById('editHoTen').value = hoTen;
+        document.getElementById('editSoDienThoai').value = soDienThoai;
+        document.getElementById('editTenDangNhap').value = tenDangNhap;
+        document.getElementById('editMatKhau').value = matKhau;
+        document.getElementById('editXacNhanMatKhau').value = matKhau;
+        document.getElementById('editVaiTro').value = vaiTro;
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function togglePasswordCreate() {
+        var checkbox = document.getElementById('showPasswordCreate');
+        var password = document.getElementById('createMatKhau');
+        var confirmPassword = document.getElementById('createXacNhanMatKhau');
+        
+        if (checkbox.checked) {
+            password.type = 'text';
+            confirmPassword.type = 'text';
+        } else {
+            password.type = 'password';
+            confirmPassword.type = 'password';
+        }
+    }
+
+    function togglePasswordEdit() {
+        var checkbox = document.getElementById('showPasswordEdit');
+        var password = document.getElementById('editMatKhau');
+        var confirmPassword = document.getElementById('editXacNhanMatKhau');
+        
+        if (checkbox.checked) {
+            password.type = 'text';
+            confirmPassword.type = 'text';
+        } else {
+            password.type = 'password';
+            confirmPassword.type = 'password';
+        }
+    }
+
+    // Validate mật khẩu khi submit form Create
+    document.addEventListener('DOMContentLoaded', function() {
+        var createForm = document.querySelector('form[action*="Create_NV"]');
+        if (createForm) {
+            createForm.addEventListener('submit', function(e) {
+                var password = document.getElementById('createMatKhau').value;
+                var confirmPassword = document.getElementById('createXacNhanMatKhau').value;
+                var matchSpan = document.getElementById('createPasswordMatch');
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    matchSpan.classList.remove('hidden');
+                    return false;
+                } else {
+                    matchSpan.classList.add('hidden');
+                }
+            });
+        }
+
+        // Validate mật khẩu khi submit form Edit
+        var editForm = document.getElementById('editForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function(e) {
+                var password = document.getElementById('editMatKhau').value;
+                var confirmPassword = document.getElementById('editXacNhanMatKhau').value;
+                var matchSpan = document.getElementById('editPasswordMatch');
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    matchSpan.classList.remove('hidden');
+                    return false;
+                } else {
+                    matchSpan.classList.add('hidden');
+                }
+            });
+        }
+
+        // Kiểm tra mật khẩu khi nhập (real-time)
+        var createMatKhau = document.getElementById('createMatKhau');
+        var createXacNhanMatKhau = document.getElementById('createXacNhanMatKhau');
+        if (createMatKhau && createXacNhanMatKhau) {
+            createXacNhanMatKhau.addEventListener('input', function() {
+                var matchSpan = document.getElementById('createPasswordMatch');
+                if (createMatKhau.value !== createXacNhanMatKhau.value && createXacNhanMatKhau.value.length > 0) {
+                    matchSpan.classList.remove('hidden');
+                } else {
+                    matchSpan.classList.add('hidden');
+                }
+            });
+        }
+
+        var editMatKhau = document.getElementById('editMatKhau');
+        var editXacNhanMatKhau = document.getElementById('editXacNhanMatKhau');
+        if (editMatKhau && editXacNhanMatKhau) {
+            editXacNhanMatKhau.addEventListener('input', function() {
+                var matchSpan = document.getElementById('editPasswordMatch');
+                if (editMatKhau.value !== editXacNhanMatKhau.value && editXacNhanMatKhau.value.length > 0) {
+                    matchSpan.classList.remove('hidden');
+                } else {
+                    matchSpan.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>

@@ -2,7 +2,7 @@
 @model IEnumerable<QuanLyQuanNuoc_65130449.Models.SanPham>
 @{
     ViewBag.Title = "Menu";
-    Layout = "~/Views/Shared/_LayoutTrangChu.cshtml";
+    Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
     var categories = ViewBag.Categories as List<QuanLyQuanNuoc_65130449.Models.DanhMuc>;
     string search = ViewBag.Search as string;
     int? selectedCategoryId = ViewBag.SelectedCategoryId as int?;
@@ -13,7 +13,7 @@
 
     <!-- Thanh tìm kiếm + lọc danh mục -->
     <div class="bg-white rounded-2xl shadow-sm border border-sky-100 p-5 mb-8">
-        @using (Html.BeginForm("Menu", "TrangChuController_65130449", FormMethod.Get, new { @class = "grid grid-cols-1 md:grid-cols-3 gap-4 items-end" }))
+        @using (Html.BeginForm("Menu_KH", "KhachHangController_65130449", FormMethod.Get, new { @class = "grid grid-cols-1 md:grid-cols-3 gap-4 items-end" }))
         {
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm đồ uống</label>
@@ -46,7 +46,7 @@
                         class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow-md shadow-emerald-200/70">
                     <i class="fas fa-search mr-2"></i> Lọc
                 </button>
-                <a href="@Url.Action("Menu", "TrangChuController_65130449")"
+                <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
                    class="inline-flex justify-center items-center px-4 py-2 border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50">
                     Xóa lọc
                 </a>
@@ -115,7 +115,7 @@
                 <ul class="inline-flex items-center -space-x-px">
                     @{
                         var routeValues = new System.Web.Routing.RouteValueDictionary
-                        {
+                            {
                             { "search", search },
                             { "categoryId", selectedCategoryId }
                         };
@@ -126,7 +126,7 @@
                         @if (currentPage > 1)
                         {
                             routeValues["page"] = currentPage - 1;
-                            <a href="@Url.Action("Menu", "TrangChuController_65130449", routeValues)"
+                            <a href="@Url.Action("Menu_KH", "KhachHangController_65130449", routeValues)"
                                class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
                                 «
                             </a>
@@ -145,7 +145,7 @@
                         routeValues["page"] = i;
                         bool isActive = i == currentPage;
                         <li>
-                            <a href="@Url.Action("Menu", "TrangChuController_65130449", routeValues)"
+                            <a href="@Url.Action("Menu_KH", "KhachHangController_65130449", routeValues)"
                                class="px-3 py-2 leading-tight border @(isActive ? "bg-sky-600 text-white border-sky-600" : "bg-white text-gray-500 border-gray-300 hover:bg-gray-100 hover:text-gray-700")">
                                 @i
                             </a>
@@ -157,7 +157,7 @@
                         @if (currentPage < totalPages)
                         {
                             routeValues["page"] = currentPage + 1;
-                            <a href="@Url.Action("Menu", "TrangChuController_65130449", routeValues)"
+                            <a href="@Url.Action("Menu_KH", "KhachHangController_65130449", routeValues)"
                                class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
                                 »
                             </a>

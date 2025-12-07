@@ -9,7 +9,7 @@
     <div class="max-w-2xl">
         <h1 class="text-4xl font-bold mb-4">Chào mừng đến với Quán Nước 65130449</h1>
         <p class="text-xl mb-6">Thức uống tươi mới mỗi ngày - Giao hàng nhanh chóng</p>
-        <a href="@Url.Action("Menu", "KhachHangController_65130449")"
+        <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
            class="inline-block bg-white text-sky-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100">
             Xem thực đơn ngay
         </a>
@@ -29,9 +29,18 @@
 
                     <!-- Ảnh sản phẩm -->
                     <div class="h-52 bg-gray-100">
-                        <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
-                             alt="@sp.TenSP"
-                             class="w-full h-full object-cover">
+                        @if (!string.IsNullOrEmpty(sp.HinhAnh))
+                        {
+                            <img src="@sp.HinhAnh"
+                                 alt="@sp.TenSP"
+                                 class="w-full h-full object-cover">
+                        }
+                        else
+                        {
+                            <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
+                                 alt="@sp.TenSP"
+                                 class="w-full h-full object-cover">
+                        }
                     </div>
 
                     <!-- Nội dung -->
