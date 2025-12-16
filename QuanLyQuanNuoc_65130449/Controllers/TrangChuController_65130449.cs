@@ -9,8 +9,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
 {
     public class TrangChuController_65130449Controller : Controller
     {
-        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuoc_65130449Entities1 db =
-            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuoc_65130449Entities1();
+        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities db =
+            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities();
 
         // GET: TrangChuController_65130449
         public ActionResult Index()
@@ -36,7 +36,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
 
         // Trang Menu: thanh tìm kiếm, phân loại sản phẩm, hiển thị danh sách + phân trang
-        public ActionResult Menu(string search, int? categoryId, int page = 1, int pageSize = 9)
+        public ActionResult Menu(string search, string categoryId, int page = 1, int pageSize = 9)
         {
             // Chuẩn bị dữ liệu lọc
             ViewBag.Categories = db.DanhMucs
@@ -55,10 +55,9 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             }
 
             // Lọc theo danh mục
-            if (categoryId.HasValue && categoryId.Value > 0)
+            if (!string.IsNullOrEmpty(categoryId))
             {
-                int maDanhMuc = categoryId.Value;
-                query = query.Where(sp => sp.MaDanhMuc == maDanhMuc);
+                query = query.Where(sp => sp.MaDanhMuc == categoryId);
             }
 
             // Thông tin phân trang

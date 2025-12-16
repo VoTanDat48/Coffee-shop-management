@@ -14,9 +14,9 @@ namespace QuanLyQuanNuoc_65130449.Models
     
     public partial class ChiTietDonHang
     {
-        public int MaCTDH { get; set; }
-        public int MaDonHang { get; set; }
-        public int MaSP { get; set; }
+        public string MaCTDH { get; set; }
+        public string MaDonHang { get; set; }
+        public string MaSP { get; set; }
         public int SoLuong { get; set; }
         public decimal DonGia { get; set; }
     

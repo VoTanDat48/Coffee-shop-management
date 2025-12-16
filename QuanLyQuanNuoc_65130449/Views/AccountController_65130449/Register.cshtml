@@ -4,85 +4,139 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-    <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Đăng ký tài khoản</h2>
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 to-emerald-50 py-12 px-4">
+
+    <div class="max-w-xl w-full bg-white p-10 rounded-3xl shadow-2xl transform transition-all duration-500 hover:shadow-3xl border border-gray-100 relative overflow-hidden">
+
+        <div class="absolute top-0 right-0 h-40 w-40 bg-emerald-100 opacity-50 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 left-0 h-24 w-24 bg-sky-100 opacity-50 rounded-full transform -translate-x-1/2 translate-y-1/2"></div>
+
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 mx-auto bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-400/50 transform hover:scale-105 transition-transform duration-300">
+                <i class="fa fa-user-plus text-white text-3xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mt-5">Tạo Tài Khoản Mới</h2>
+            <p class="text-gray-500 mt-1">Gia nhập cộng đồng yêu thích đồ uống!</p>
+        </div>
 
         @using (Html.BeginForm("Register", "AccountController_65130449", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true, "", new { @class = "text-red-600 mb-4" })
+            @Html.ValidationSummary(true, "Vui lòng kiểm tra lại thông tin đăng ký.", new { @class = "p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-center font-medium mb-5" })
 
-            <div class="mb-4">
-                <label>Họ và Tên</label>
-                
-                @Html.TextBoxFor(m => m.HoTen, new { @class = "w-full border px-3 py-2 rounded-lg" })
-                @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-red-600" })
+            <div class="grid md:grid-cols-2 gap-5 mb-5">
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Họ và Tên</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa fa-id-badge"></i>
+                        </span>
+                        @Html.TextBoxFor(m => m.HoTen, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "Ví dụ: Nguyễn Văn A" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-red-600 text-sm mt-1 block" })
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Số Điện Thoại</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa fa-phone"></i>
+                        </span>
+                        @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "09xx xxx xxx" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-red-600 text-sm mt-1 block" })
+                </div>
+
             </div>
 
-            <div class="mb-4">
-                <label>Số Điện Thoại</label>
-                
-                @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "w-full border px-3 py-2 rounded-lg" })
-                @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-red-600" })
+            <div class="mb-5">
+                @Html.LabelFor(m => m.Email, new { @class = "block text-gray-700 font-medium mb-2" })
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "dia_chi@email.com" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-red-600 text-sm mt-1 block" })
             </div>
 
-            <div class="mb-4">
-                @Html.LabelFor(m => m.Email)
-                @Html.TextBoxFor(m => m.Email, new { @class = "w-full border px-3 py-2 rounded-lg" })
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-red-600" })
+            <div class="mb-5">
+                <label class="block text-gray-700 font-medium mb-2">Tên Đăng Nhập</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    @Html.TextBoxFor(m => m.TenDangNhap, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "Tên tài khoản bạn muốn dùng" })
+                </div>
+                @Html.ValidationMessageFor(m => m.TenDangNhap, "", new { @class = "text-red-600 text-sm mt-1 block" })
             </div>
 
-            <div class="mb-4">
-                <label>Tên Đăng Nhập</label>
-                
-                @Html.TextBoxFor(m => m.TenDangNhap, new { @class = "w-full border px-3 py-2 rounded-lg" })
-                @Html.ValidationMessageFor(m => m.TenDangNhap, "", new { @class = "text-red-600" })
+            <div class="grid md:grid-cols-2 gap-5 mb-5">
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa fa-lock"></i>
+                        </span>
+                        @Html.PasswordFor(m => m.MatKhau, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", id = "MatKhau", placeholder = "Mật khẩu" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.MatKhau, "", new { @class = "text-red-600 text-sm mt-1 block" })
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Xác nhận mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa fa-lock-open"></i>
+                        </span>
+                        <input type="password" name="XacNhanMatKhau" id="XacNhanMatKhau"
+                               class="w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200"
+                               placeholder="Nhập lại mật khẩu" />
+                    </div>
+                    @Html.ValidationMessage("XacNhanMatKhau", "", new { @class = "text-red-600 text-sm mt-1 block" })
+                </div>
+
             </div>
 
-            <div class="mb-4">
-                <label>Mật khẩu</label>
-                
-                @Html.PasswordFor(m => m.MatKhau, new { @class = "w-full border px-3 py-2 rounded-lg", id = "MatKhau" })
-                @Html.ValidationMessageFor(m => m.MatKhau, "", new { @class = "text-red-600" })
+            <div class="mb-6 flex items-center justify-end">
+                <input type="checkbox" id="ShowPassword" class="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 mr-2 cursor-pointer" />
+                <label for="ShowPassword" class="text-gray-600 text-sm cursor-pointer">Hiển thị mật khẩu</label>
             </div>
 
-            <div class="mb-6">
-                <label>Xác nhận mật khẩu</label>
-                <input type="password" name="XacNhanMatKhau" id="XacNhanMatKhau" class="w-full border px-3 py-2 rounded-lg" />
-                @Html.ValidationMessage("XacNhanMatKhau", "", new { @class = "text-red-600" })
-            </div>
-
-            <div class="mb-4 flex items-center">
-                <input type="checkbox" id="ShowPassword" class="mr-2" />
-                <label for="ShowPassword" class="text-gray-700">Hiển thị mật khẩu</label>
-            </div>
-
-            <button type="submit" class="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium shadow-md shadow-emerald-200/70">
-                Đăng ký
+            <button type="submit"
+                    class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-lg transition duration-300 shadow-lg shadow-emerald-300/50 transform hover:scale-[1.01]">
+                <i class="fa fa-paper-plane mr-2"></i> Hoàn tất Đăng ký
             </button>
         }
 
-        <div class="mt-4 text-center">
-            <span>Bạn đã có tài khoản?</span>
-            <a href="@Url.Action("Login", "AccountController_65130449")" class="text-sky-600 font-medium hover:text-sky-700">Đăng nhập</a>
+        <div class="mt-8 text-center border-t border-gray-100 pt-6">
+            <span class="text-gray-600 mr-3">Bạn đã có tài khoản?</span>
+            <a href="@Url.Action("Login", "AccountController_65130449")"
+               class="inline-block px-6 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-full font-semibold transition duration-300 shadow-md shadow-sky-300/50">
+                Đăng nhập ngay
+            </a>
         </div>
     </div>
 </div>
+
 @section scripts{
     @Scripts.Render("~/bundles/jqueryval")
     <script>
         document.getElementById('ShowPassword').addEventListener('change', function () {
             var matKhau = document.getElementById('MatKhau');
             var xacNhan = document.getElementById('XacNhanMatKhau');
-            if (this.checked) {
-                matKhau.type = 'text';
-                xacNhan.type = 'text';
-            } else {
-                matKhau.type = 'password';
-                xacNhan.type = 'password';
+
+            // Hàm chuyển đổi type
+            function toggleType(element) {
+                if (element) {
+                    element.type = this.checked ? 'text' : 'password';
+                }
             }
+
+            toggleType.call(this, matKhau);
+            toggleType.call(this, xacNhan);
         });
     </script>
 }
-

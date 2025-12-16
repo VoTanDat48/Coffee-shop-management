@@ -9,9 +9,9 @@ namespace QuanLyQuanNuoc_65130449.Controllers
 {
     public class AccountController_65130449Controller : Controller
     {
-        // DbContext sinh ra từ Entity Framework (tên hiện tại: QuanLyQuanNuoc_65130449Entities1)
-        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuoc_65130449Entities1 db =
-            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuoc_65130449Entities1();
+        // DbContext sinh ra từ Entity Framework (tên hiện tại: QuanLyQuanNuocWindy_65130449Entities)
+        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities db =
+            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities();
 
         [HttpGet]
         public ActionResult Login(string returnUrl)
@@ -38,16 +38,18 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             {
                 FormsAuthentication.SetAuthCookie(nhanVien.TenDangNhap, false);
 
-                // Phân quyền theo Vai trò
+                // Phân quyền theo Vai trò (1: NV Duyệt, 2: NV Giao hàng, 3: Quản lý)
                 switch (nhanVien.VaiTro)
                 {
-                    case 0: // Quản lý/Admin
+                    case 3: // Quản lý/Admin
                         return RedirectToAction("Index", "AdminController_65130449"); // Trang quản lý tổng
                     case 1: // Nhân viên Duyệt
                         return RedirectToAction("Processing", "Employee"); // Trang duyệt đơn
                     case 2: // Nhân viên Giao hàng
                         return RedirectToAction("Delivery", "Employee"); // Trang giao hàng
-                    
+                    default:
+                        ModelState.AddModelError("", "Vai trò không hợp lệ.");
+                        return View();
                 }
             }
 
@@ -78,7 +80,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         public ActionResult LogOff()
         {
             FormsAuthentication.SignOut();
-            return RedirectToAction("Index", "TrangChu_65130449");
+            Session.Clear();
+            return RedirectToAction("Index", "TrangChuController_65130449");
         }
 
         [HttpGet]
@@ -119,7 +122,24 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 return View(model);
             }
 
-            // 4. Lưu vào database
+            // 4. Tự động tạo mã khách hàng mới (KH0001, KH0002, ...)
+            var lastKhachHang = db.KhachHangs.OrderByDescending(kh => kh.MaKH).FirstOrDefault();
+            string newMaKH = "KH0001";
+            
+            if (lastKhachHang != null && lastKhachHang.MaKH.StartsWith("KH"))
+            {
+                // Lấy số từ mã cuối cùng
+                string numberPart = lastKhachHang.MaKH.Substring(2);
+                if (int.TryParse(numberPart, out int lastNumber))
+                {
+                    int newNumber = lastNumber + 1;
+                    newMaKH = "KH" + newNumber.ToString("D4"); // D4 để format 0001, 0002, ...
+                }
+            }
+            
+            model.MaKH = newMaKH;
+
+            // 5. Lưu vào database
             db.KhachHangs.Add(model);
             db.SaveChanges();
 

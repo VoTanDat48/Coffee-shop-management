@@ -141,13 +141,16 @@
     <Compile Include="Models\ChiTietDonHang.cs">
       <DependentUpon>Model_65130449.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChiTietGioHang.cs">
+      <DependentUpon>Model_65130449.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>Model_65130449.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>Model_65130449.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\HoaDon.cs">
+    <Compile Include="Models\GioHang.cs">
       <DependentUpon>Model_65130449.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\KhachHang.cs">
@@ -172,15 +175,6 @@
       <DependentUpon>Model_65130449.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.cs">
-      <DependentUpon>Model_65130449.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
-      <DependentUpon>Model_65130449.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sp_helpdiagrams_Result.cs">
-      <DependentUpon>Model_65130449.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>Model_65130449.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

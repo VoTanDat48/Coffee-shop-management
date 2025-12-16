@@ -18,16 +18,19 @@ namespace QuanLyQuanNuoc_65130449.Models
         public SanPham()
         {
             this.ChiTietDonHangs = new HashSet<ChiTietDonHang>();
+            this.ChiTietGioHangs = new HashSet<ChiTietGioHang>();
         }
     
-        public int MaSP { get; set; }
+        public string MaSP { get; set; }
         public string TenSP { get; set; }
         public decimal DonGia { get; set; }
-        public int MaDanhMuc { get; set; }
+        public string MaDanhMuc { get; set; }
         public string HinhAnh { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
     }
 }

@@ -3,15 +3,21 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-    <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
-        <div class="flex justify-center mb-6">
-            <div class="w-16 h-16 bg-sky-600 rounded-lg flex items-center justify-center">
-                <span class="text-white text-2xl font-bold">Q</span>
-            </div>
-        </div>
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 to-emerald-50 py-12 px-4">
 
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Đăng nhập tài khoản</h2>
+    <div class="max-w-lg w-full bg-white p-10 rounded-3xl shadow-2xl transform transition-all duration-500 hover:shadow-3xl border border-gray-100 relative overflow-hidden">
+
+        <div class="absolute top-0 right-0 h-40 w-40 bg-sky-100 opacity-50 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 left-0 h-24 w-24 bg-emerald-100 opacity-50 rounded-full transform -translate-x-1/2 translate-y-1/2"></div>
+
+
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 mx-auto bg-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-400/50 transform hover:rotate-3 transition-transform duration-300">
+                <i class="fa fa-coffee text-white text-3xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mt-5">Chào Mừng Trở Lại</h2>
+            <p class="text-gray-500 mt-1">Đăng nhập để đặt món ngay!</p>
+        </div>
 
         @using (Html.BeginForm("Login", "AccountController_65130449", FormMethod.Post))
         {
@@ -20,7 +26,8 @@
 
             if (!ViewData.ModelState.IsValid)
             {
-                <div class="mb-4 text-red-600 text-center">
+                <div class="mb-5 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-center font-medium">
+                    <i class="fa fa-triangle-exclamation mr-2"></i>
                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                     {
                         <div>@error.ErrorMessage</div>
@@ -28,45 +35,53 @@
                 </div>
             }
 
-            <!-- Phần còn lại giữ nguyên -->
-            <div class="mb-4">
-                <label for="TenDangNhap" class="block text-gray-700 mb-2">Tên đăng nhập</label>
-                <input type="text" name="TenDangNhap" id="TenDangNhap"
-                       class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                       placeholder="Nhập tên đăng nhập" required />
+            <div class="mb-5">
+                <label for="TenDangNhap" class="block text-gray-700 font-medium mb-2">Tên đăng nhập</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <input type="text" name="TenDangNhap" id="TenDangNhap"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200"
+                           placeholder="Nhập tên đăng nhập của bạn" required />
+                </div>
             </div>
 
             <div class="mb-6">
-                <label for="MatKhau" class="block text-gray-700 mb-2">Mật khẩu</label>
-                <input type="password" name="MatKhau" id="MatKhau"
-                       class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                       placeholder="Nhập mật khẩu" required />
+                <label for="MatKhau" class="block text-gray-700 font-medium mb-2">Mật khẩu</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <input type="password" name="MatKhau" id="MatKhau"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200"
+                           placeholder="Nhập mật khẩu" required />
+                </div>
 
-                <!-- Checkbox hiện mật khẩu -->
-                <div class="flex items-center mt-2">
-                    <input type="checkbox" id="ShowPass" class="mr-2" onclick="togglePassword()" />
-                    <label for="ShowPass" class="text-gray-700 text-sm">Hiện mật khẩu</label>
+                <div class="flex items-center mt-3 justify-end">
+                    <input type="checkbox" id="ShowPass" class="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 mr-2" onclick="togglePassword()" />
+                    <label for="ShowPass" class="text-gray-600 text-sm cursor-pointer">Hiện mật khẩu</label>
                 </div>
             </div>
 
             <script>
-    function togglePassword() {
-        var pass = document.getElementById("MatKhau");
-        pass.type = (pass.type === "password") ? "text" : "password";
-    }
+                function togglePassword() {
+                    var pass = document.getElementById("MatKhau");
+                    pass.type = (pass.type === "password") ? "text" : "password";
+                }
             </script>
 
             <button type="submit"
-                    class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium transition shadow-md shadow-emerald-200/70">
-                Đăng nhập
+                    class="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-bold text-lg transition duration-300 shadow-lg shadow-sky-300/50 transform hover:scale-[1.01]">
+                <i class="fa fa-right-to-bracket mr-2"></i> Đăng nhập
             </button>
         }
 
-        <div class="mt-6 text-center">
-            <span class="text-gray-600 mr-2">Chưa có tài khoản?</span>
+        <div class="mt-8 text-center border-t border-gray-100 pt-6">
+            <span class="text-gray-600 mr-3">Chưa có tài khoản?</span>
             <a href="@Url.Action("Register", "AccountController_65130449")"
-               class="inline-block px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition shadow-md shadow-emerald-200/70">
-                Đăng ký
+               class="inline-block px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-semibold transition duration-300 shadow-md shadow-emerald-300/50">
+                Tạo tài khoản mới
             </a>
         </div>
     </div>

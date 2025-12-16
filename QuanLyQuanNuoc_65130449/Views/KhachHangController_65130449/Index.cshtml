@@ -1,84 +1,162 @@
-﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.SanPham>
+﻿@model List<QuanLyQuanNuoc_65130449.Models.SanPham>
 @{
-    ViewBag.Title = "Trang chủ";
+    ViewBag.Title = "Trang Chủ";
     Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
 }
 
-<!-- Hero Section -->
-<div class="bg-gradient-to-r from-sky-500 to-emerald-600 rounded-2xl p-8 mb-12 text-white">
-    <div class="max-w-2xl">
-        <h1 class="text-4xl font-bold mb-4">Chào mừng đến với Quán Nước 65130449</h1>
-        <p class="text-xl mb-6">Thức uống tươi mới mỗi ngày - Giao hàng nhanh chóng</p>
-        <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
-           class="inline-block bg-white text-sky-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100">
-            Xem thực đơn ngay
-        </a>
-    </div>
-</div>
+<section class="bg-gray-50 pt-20 pb-16 lg:pt-28 lg:pb-24 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 grid lg:grid-cols-2 gap-10 items-center">
 
-<!-- Sản phẩm nổi bật -->
-<div class="mb-12">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Sản phẩm nổi bật</h2>
+        <div class="z-10">
+            <span class="inline-block px-5 py-2 mb-4 rounded-full text-sm font-semibold text-sky-700 bg-sky-200/60 border border-sky-300 transform hover:scale-105 transition-transform duration-300">
+                #HươngVịTươiMới
+            </span>
+            <h1 class="text-6xl font-serif font-extrabold text-gray-900 leading-tight mb-6">
+                Pha Chế Từ Đam Mê, <span class="text-emerald-500">Dành Cho Bạn</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8">
+                Khám phá những thức uống thủ công, sử dụng nguyên liệu chọn lọc để mang đến trải nghiệm vị giác tuyệt vời nhất.
+            </p>
+
+            <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
+               class="inline-flex items-center px-12 py-4 rounded-xl text-xl font-bold text-white
+                      bg-sky-600 hover:bg-sky-700 transition-all duration-300
+                      shadow-xl shadow-sky-400/50 transform hover:scale-[1.02] border-b-4 border-sky-800">
+                Khám Phá Thực Đơn
+                <i class="fa fa-mug-hot ml-3 text-white"></i>
+            </a>
+        </div>
+
+        <div class="relative hidden lg:block">
+            <div class="absolute inset-0 bg-emerald-100 rounded-[40px] shadow-2xl shadow-emerald-300/50 transform rotate-3 scale-[0.97]"></div>
+
+            <img src="~/Images/banner.jpg"
+                 alt="Đồ uống thủ công"
+                 class="w-full h-auto rounded-3xl shadow-2xl border-4 border-white relative z-10 transform hover:rotate-[-2deg] transition-transform duration-500" />
+
+            <div class="absolute top-5 -right-5 bg-emerald-500 p-3 rounded-full shadow-lg animate-spin-slow">
+                <i class="fa fa-seedling text-white text-2xl"></i>
+            </div>
+            <style>
+                .animate-spin-slow {
+                    animation: spin 8s linear infinite;
+                }
+
+                @@keyframes spin {
+                    from {
+                        transform: rotate(0deg);
+                    }
+
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+        </div>
+    </div>
+</section>
+
+<section class="bg-white py-16 border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8 text-center">
+
+        <div class="p-4 transform transition-all duration-500 hover:scale-[1.05] hover:shadow-lg rounded-xl">
+            <i class="fa fa-leaf text-4xl text-emerald-500 mb-3"></i>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Nguyên Liệu Tươi</h3>
+            <p class="text-gray-500">100% nguyên liệu tự nhiên, chọn lọc kỹ càng mỗi ngày.</p>
+        </div>
+
+        <div class="p-4 transform transition-all duration-500 hover:scale-[1.05] hover:shadow-lg rounded-xl">
+            <i class="fa fa-hand-holding-heart text-4xl text-sky-500 mb-3"></i>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Pha Chế Thủ Công</h3>
+            <p class="text-gray-500">Mỗi ly nước là một tác phẩm nghệ thuật được pha chế bằng tay.</p>
+        </div>
+
+        <div class="p-4 transform transition-all duration-500 hover:scale-[1.05] hover:shadow-lg rounded-xl">
+            <i class="fa fa-star text-4xl text-yellow-500 mb-3"></i>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Trải Nghiệm Độc Đáo</h3>
+            <p class="text-gray-500">Thực đơn đa dạng, hương vị riêng biệt không thể tìm thấy ở đâu khác.</p>
+        </div>
+
+    </div>
+</section>
+
+<div class="max-w-6xl mx-auto px-4 py-20">
+
+    <div class="text-center mb-16">
+        <h2 class="text-4xl font-extrabold text-sky-700 mb-3 relative inline-block pb-1">
+            Menu Được Yêu Thích
+            <span class="absolute bottom-0 left-0 w-full h-1 bg-emerald-400 rounded-full transform scale-x-75"></span>
+        </h2>
+        <p class="text-gray-600 text-xl mt-3">Khám phá những lựa chọn được đánh giá cao nhất từ khách hàng của chúng tôi.</p>
+    </div>
 
     @if (Model != null && Model.Any())
     {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
             @foreach (var sp in Model)
             {
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg hover:-translate-y-1">
+                <div class="bg-white rounded-3xl shadow-xl border border-sky-100 overflow-hidden
+                            transform transition-all duration-500 ease-in-out hover:shadow-2xl
+                            hover:-translate-y-2 hover:border-emerald-300/70 relative">
 
-                    <!-- Ảnh sản phẩm -->
-                    <div class="h-52 bg-gray-100">
+                    <div class="absolute top-0 right-0 h-16 w-16 bg-emerald-500 clip-diagonal opacity-80"></div>
+                    <style>
+                        .clip-diagonal {
+                            clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+                        }
+                    </style>
+
+                    <div class="h-60 bg-gray-50 overflow-hidden">
                         @if (!string.IsNullOrEmpty(sp.HinhAnh))
                         {
                             <img src="@sp.HinhAnh"
                                  alt="@sp.TenSP"
-                                 class="w-full h-full object-cover">
+                                 class="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-110">
                         }
                         else
                         {
-                            <img src="https://via.placeholder.com/500x350/7c3aed/ffffff?text=@sp.TenSP"
-                                 alt="@sp.TenSP"
-                                 class="w-full h-full object-cover">
+                            <div class="w-full h-full flex items-center justify-center bg-sky-100 text-sky-500 text-3xl font-semibold">
+                                <i class="fa fa-coffee text-5xl mr-3"></i> @sp.TenSP
+                            </div>
                         }
                     </div>
 
-                    <!-- Nội dung -->
-                    <div class="p-5 space-y-4">
-                        <h3 class="font-semibold text-xl text-gray-800">@sp.TenSP</h3>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-sky-500 text-2xl font-bold">
+                    <div class="p-6 space-y-4">
+                        <h3 class="font-bold text-2xl text-gray-800 truncate">@sp.TenSP</h3>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                            <span class="text-sky-500 text-3xl font-extrabold">
                                 @String.Format("{0:N0}", sp.DonGia)₫
                             </span>
 
-                            <!-- Nút Đặt ngay -->
-                            @if (Session["UserRole"]?.ToString() == "khachhang")
-                            {
-                                <a href="@Url.Action("AddToCart", "Cart_65130449", new { productId = sp.MaSP })"
-                                   class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 transition font-medium shadow-md shadow-emerald-200/70">
-                                    <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
-                                </a>
-                            }
-                            else
-                            {
-                                <a href="@Url.Action("Login", "AccountController_65130449")"
-                                   class="px-4 py-2 rounded-lg text-white bg-sky-500 hover:bg-sky-600 transition font-medium shadow-md shadow-emerald-200/70">
-                                    <i class="fa fa-cart-shopping mr-1"></i> Đặt ngay
-                                </a>
-                            }
+                            <a href="@Url.Action("Cart", "KhachHangController_65130449", new { id = sp.MaSP })"
+                               class="flex items-center px-5 py-2.5 rounded-lg text-white bg-emerald-500
+                                      hover:bg-emerald-600 transition-colors duration-300 font-semibold
+                                      shadow-md shadow-emerald-200/50">
+                                <i class="fa fa-cart-shopping mr-2"></i> Thêm vào Giỏ
+                            </a>
                         </div>
                     </div>
                 </div>
             }
+
+        </div>
+
+        <div class="text-center mt-20">
+            <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")"
+               class="inline-flex items-center px-10 py-4 rounded-xl text-xl font-bold text-sky-600 border-2 border-sky-600
+                      hover:bg-sky-600 hover:text-white transition-all duration-300 transform hover:scale-105">
+                Xem toàn bộ Menu
+                <i class="fa fa-arrow-right ml-2"></i>
+            </a>
         </div>
     }
     else
     {
-        <div class="text-center py-12 bg-yellow-50 rounded-lg">
-            <div class="text-4xl mb-4">☕</div>
-            <h3 class="text-xl font-medium text-gray-700 mb-2">Đang cập nhật menu</h3>
-            <p class="text-gray-500">Vui lòng quay lại sau!</p>
+        <div class="text-center py-20 bg-sky-50 rounded-3xl border-4 border-dashed border-sky-200">
+            <div class="text-7xl mb-5 text-sky-500 animate-pulse">☕</div>
+            <h3 class="text-3xl font-extrabold text-sky-700 mb-3">Menu đang được cập nhật!</h3>
+            <p class="text-gray-600 text-lg">Chúng tôi đang chuẩn bị những món mới thật hấp dẫn. Vui lòng quay lại sau nhé!</p>
         </div>
     }
 </div>

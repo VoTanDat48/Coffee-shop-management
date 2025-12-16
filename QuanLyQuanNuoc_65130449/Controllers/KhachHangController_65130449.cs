@@ -9,8 +9,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
 {
     public class KhachHangController_65130449Controller : Controller
     {
-        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuoc_65130449Entities1 db =
-            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuoc_65130449Entities1();
+        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities db =
+            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities();
 
         public ActionResult Index()
         {
@@ -42,7 +42,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 return RedirectToAction("Login", "AccountController_65130449");
             }
 
-            int maKH = Convert.ToInt32(Session["MaKH"]);
+            string maKH = Session["MaKH"].ToString();
             var kh = db.KhachHangs.Find(maKH);
 
             if (kh == null)
@@ -53,6 +53,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
 
             return View(kh);
         }
+
         // GET: Chỉnh sửa thông tin
         public ActionResult EditAccount()
         {
@@ -61,11 +62,20 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 return RedirectToAction("Login", "AccountController_65130449");
             }
 
-            int maKH = Convert.ToInt32(Session["MaKH"]);
+            string maKH = Session["MaKH"].ToString();
             var kh = db.KhachHangs.Find(maKH);
 
             if (kh == null)
-                return HttpNotFound();
+            {
+                TempData["Error"] = "Không tìm thấy thông tin khách hàng.";
+                return RedirectToAction("MyAccount");
+            }
+
+            // Truyền TempData từ POST action nếu có
+            if (TempData["Success"] != null)
+            {
+                ViewBag.Success = TempData["Success"];
+            }
 
             return View(kh);
         }
@@ -73,57 +83,170 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         // POST: Lưu chỉnh sửa
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditAccount(KhachHang model, string MatKhauCu, string MatKhauMoi, string XacNhanMatKhau)
+        public ActionResult EditAccount(KhachHang model, string MatKhauCu = "", string MatKhauMoi = "", string XacNhanMatKhau = "")
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var khachHang = db.KhachHangs.Find(model.MaKH);
-            if (khachHang == null)
+            // 1. Kiểm tra session
+            if (Session["MaKH"] == null)
             {
-                ModelState.AddModelError("", "Khách hàng không tồn tại.");
+                return RedirectToAction("Login", "AccountController_65130449");
+            }
+
+            // 2. Lấy thông tin khách hàng hiện tại từ DB
+            var khachHangGoc = db.KhachHangs.Find(model.MaKH);
+
+            if (khachHangGoc == null)
+            {
+                ModelState.AddModelError("", "Khách hàng không tồn tại hoặc phiên làm việc đã kết thúc.");
                 return View(model);
             }
 
-            // Cập nhật thông tin cơ bản
-            khachHang.HoTen = model.HoTen;
-            khachHang.SoDienThoai = model.SoDienThoai;
-            khachHang.Email = model.Email;
+            // 3. KIỂM TRA THỦ CÔNG TẤT CẢ CÁC TRƯỜNG
+            bool hasValidationError = false;
 
-            // Chỉ xử lý đổi mật khẩu nếu người dùng nhập mật khẩu mới
-            if (!string.IsNullOrEmpty(MatKhauMoi))
+            if (string.IsNullOrWhiteSpace(model.HoTen))
             {
-                // Phải nhập mật khẩu cũ
-                if (string.IsNullOrEmpty(MatKhauCu))
+                ModelState.AddModelError("HoTen", "Họ tên không được để trống");
+                hasValidationError = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(model.SoDienThoai))
+            {
+                ModelState.AddModelError("SoDienThoai", "Số điện thoại không được để trống");
+                hasValidationError = true;
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(model.SoDienThoai, @"^0\d{9,10}$"))
+            {
+                ModelState.AddModelError("SoDienThoai", "Số điện thoại không hợp lệ.");
+                hasValidationError = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Email))
+            {
+                ModelState.AddModelError("Email", "Email không được để trống");
+                hasValidationError = true;
+            }
+            else if (!IsValidEmail(model.Email))
+            {
+                ModelState.AddModelError("Email", "Địa chỉ email không hợp lệ.");
+                hasValidationError = true;
+            }
+
+            // 4. Xử lý đổi mật khẩu - PHẢI KHAI BÁO isPasswordChanging Ở ĐÂY
+            bool isPasswordChanging = !string.IsNullOrWhiteSpace(MatKhauMoi);
+
+            if (isPasswordChanging)
+            {
+                // Nếu đổi mật khẩu, tất cả các trường phải được nhập
+                if (string.IsNullOrWhiteSpace(MatKhauCu))
                 {
-                    ModelState.AddModelError("", "Vui lòng nhập mật khẩu cũ.");
-                    return View(model);
+                    ModelState.AddModelError("MatKhauCu", "Vui lòng nhập mật khẩu cũ để đổi mật khẩu.");
+                    hasValidationError = true;
+                }
+                else if (khachHangGoc.MatKhau != MatKhauCu)
+                {
+                    ModelState.AddModelError("MatKhauCu", "Mật khẩu cũ không đúng.");
+                    hasValidationError = true;
                 }
 
-                // Kiểm tra mật khẩu cũ
-                if (khachHang.MatKhau != MatKhauCu)
+                if (string.IsNullOrWhiteSpace(MatKhauMoi))
                 {
-                    ModelState.AddModelError("", "Mật khẩu cũ không đúng.");
-                    return View(model);
+                    ModelState.AddModelError("MatKhauMoi", "Mật khẩu mới không được để trống");
+                    hasValidationError = true;
+                }
+                else if (MatKhauMoi.Length < 6)
+                {
+                    ModelState.AddModelError("MatKhauMoi", "Mật khẩu mới phải có ít nhất 6 ký tự");
+                    hasValidationError = true;
                 }
 
-                // Kiểm tra xác nhận mật khẩu
-                if (MatKhauMoi != XacNhanMatKhau)
+                if (string.IsNullOrWhiteSpace(XacNhanMatKhau))
+                {
+                    ModelState.AddModelError("XacNhanMatKhau", "Vui lòng xác nhận mật khẩu mới");
+                    hasValidationError = true;
+                }
+                else if (MatKhauMoi != XacNhanMatKhau)
                 {
                     ModelState.AddModelError("XacNhanMatKhau", "Xác nhận mật khẩu mới không khớp.");
-                    return View(model);
+                    hasValidationError = true;
                 }
-
-                // Cập nhật mật khẩu mới
-                khachHang.MatKhau = MatKhauMoi;
             }
 
-            db.SaveChanges();
-            ViewBag.Success = "Cập nhật thông tin thành công!";
-            return View(model);
+            // 5. NẾU CÓ LỖI, KHÔNG ĐƯỢC LƯU
+            if (hasValidationError)
+            {
+                model.MatKhau = khachHangGoc.MatKhau;
+                model.TenDangNhap = khachHangGoc.TenDangNhap; // Gán lại để không bị null
+                ViewBag.Error = "Lưu thất bại: Vui lòng kiểm tra lại thông tin đã nhập.";
+                return View(model);
+            }
+
+            // 6. NẾU KHÔNG CÓ LỖI, THỰC HIỆN CẬP NHẬT
+            try
+            {
+                // Cập nhật thông tin cơ bản
+                khachHangGoc.HoTen = model.HoTen.Trim();
+                khachHangGoc.SoDienThoai = model.SoDienThoai.Trim();
+                khachHangGoc.Email = model.Email.Trim();
+
+                // Cập nhật mật khẩu nếu có thay đổi - DÙNG BIẾN isPasswordChanging Ở ĐÂY
+                if (isPasswordChanging)
+                {
+                    khachHangGoc.MatKhau = MatKhauMoi.Trim();
+                }
+
+                // Lưu thay đổi
+                db.SaveChanges();
+
+                TempData["Success"] = "Cập nhật thông tin thành công!";
+                return RedirectToAction("EditAccount");
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                // Xử lý lỗi chi tiết
+                var errorMessages = new List<string>();
+                foreach (var validationErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        string propertyName = validationError.PropertyName;
+                        string errorMessage = validationError.ErrorMessage;
+
+                        ModelState.AddModelError(propertyName, errorMessage);
+                        errorMessages.Add($"{propertyName}: {errorMessage}");
+                    }
+                }
+
+                model.MatKhau = khachHangGoc.MatKhau;
+                model.TenDangNhap = khachHangGoc.TenDangNhap;
+                ViewBag.Error = "Lưu thất bại: " + (errorMessages.Any() ? string.Join("; ", errorMessages) : "Dữ liệu không hợp lệ.");
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
+                model.MatKhau = khachHangGoc.MatKhau;
+                model.TenDangNhap = khachHangGoc.TenDangNhap;
+                ViewBag.Error = "Lưu thất bại: Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.";
+                return View(model);
+            }
         }
 
-        public ActionResult Menu_KH(string search, int? categoryId, int page = 1, int pageSize = 9)
+        // Hàm kiểm tra email
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+        public ActionResult Menu_KH(string search, string categoryId, int page = 1, int pageSize = 9)
         {
             // Chuẩn bị dữ liệu lọc
             ViewBag.Categories = db.DanhMucs
@@ -142,10 +265,9 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             }
 
             // Lọc theo danh mục
-            if (categoryId.HasValue && categoryId.Value > 0)
+            if (!string.IsNullOrEmpty(categoryId))
             {
-                int maDanhMuc = categoryId.Value;
-                query = query.Where(sp => sp.MaDanhMuc == maDanhMuc);
+                query = query.Where(sp => sp.MaDanhMuc == categoryId);
             }
 
             // Thông tin phân trang

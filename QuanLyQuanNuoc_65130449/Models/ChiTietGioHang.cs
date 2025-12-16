@@ -10,10 +10,17 @@
 namespace QuanLyQuanNuoc_65130449.Models
 {
     using System;
+    using System.Collections.Generic;
     
-    public partial class sp_helpdiagramdefinition_Result
+    public partial class ChiTietGioHang
     {
-        public Nullable<int> version { get; set; }
-        public byte[] definition { get; set; }
+        public string MaCTGioHang { get; set; }
+        public string MaGioHang { get; set; }
+        public string MaSP { get; set; }
+        public int SoLuong { get; set; }
+        public decimal DonGiaLucThem { get; set; }
+    
+        public virtual GioHang GioHang { get; set; }
+        public virtual SanPham SanPham { get; set; }
     }
 }

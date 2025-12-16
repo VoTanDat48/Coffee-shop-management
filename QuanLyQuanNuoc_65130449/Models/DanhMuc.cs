@@ -20,7 +20,7 @@ namespace QuanLyQuanNuoc_65130449.Models
             this.SanPhams = new HashSet<SanPham>();
         }
     
-        public int MaDanhMuc { get; set; }
+        public string MaDanhMuc { get; set; }
         public string TenDanhMuc { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

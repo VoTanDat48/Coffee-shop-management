@@ -63,9 +63,20 @@
                 @foreach (var dh in donHangs)
                 {
                     decimal tongTien = 0;
-                    foreach (var ct in dh.ChiTietDonHangs)
+                    if (dh.TongTien.HasValue)
                     {
-                        tongTien += ct.SoLuong * ct.DonGia;
+                        tongTien = dh.TongTien.Value;
+                    }
+                    else
+                    {
+                        foreach (var ct in dh.ChiTietDonHangs)
+                        {
+                            tongTien += ct.SoLuong * ct.DonGia;
+                        }
+                        if (dh.PhiVanChuyen.HasValue)
+                        {
+                            tongTien += dh.PhiVanChuyen.Value;
+                        }
                     }
                     
                     <tr class="hover:bg-gray-50">
@@ -80,10 +91,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs rounded-full
-                                @(dh.TrangThai == "Hoàn thành" || dh.TrangThai == "Đã giao" ? "bg-green-100 text-green-800" :
-                                  dh.TrangThai == "Đang xử lý" ? "bg-yellow-100 text-yellow-800" :
-                                  dh.TrangThai == "Đã hủy" ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800")">
-                                @dh.TrangThai
+                                @(dh.TrangThai == "HOANTHANH" ? "bg-green-100 text-green-800" :
+                                  dh.TrangThai == "DANGPHACHE" || dh.TrangThai == "DANGGIAO" ? "bg-yellow-100 text-yellow-800" :
+                                  dh.TrangThai == "CHODUYET" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800")">
+                                @(dh.TrangThai == "HOANTHANH" ? "Hoàn thành" :
+                                  dh.TrangThai == "DANGPHACHE" ? "Đang pha chế" :
+                                  dh.TrangThai == "DANGGIAO" ? "Đang giao" :
+                                  dh.TrangThai == "CHODUYET" ? "Chờ duyệt" : dh.TrangThai)
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">

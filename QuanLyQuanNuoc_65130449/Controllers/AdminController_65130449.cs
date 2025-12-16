@@ -11,7 +11,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
 {
     public class AdminController_65130449Controller : Controller
     {
-        private QuanLyQuanNuoc_65130449Entities1 db = new QuanLyQuanNuoc_65130449Entities1();
+        private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities db = 
+            new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities();
 
         // GET: Dashboard
         public ActionResult Index()
@@ -30,22 +31,14 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
         
         // ========== QUẢN LÝ SẢN PHẨM ==========
-        public ActionResult DS_SP(int? page, int? pageSize, int? categoryId)
+        public ActionResult DS_SP(int? page, int? pageSize, string categoryId)
         {
             ViewBag.Title = "Quản lý Sản phẩm";
             
             // Lấy giá trị từ query string nếu không có từ parameter
-            if (!categoryId.HasValue)
+            if (string.IsNullOrEmpty(categoryId))
             {
-                string categoryIdStr = Request.QueryString["categoryId"];
-                if (!string.IsNullOrEmpty(categoryIdStr))
-                {
-                    int tempId;
-                    if (int.TryParse(categoryIdStr, out tempId))
-                    {
-                        categoryId = tempId;
-                    }
-                }
+                categoryId = Request.QueryString["categoryId"];
             }
             
             int currentPage = page ?? 1;
@@ -54,9 +47,9 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             IQueryable<SanPham> query = db.SanPhams.Include("DanhMuc");
             
             // Lọc theo danh mục nếu có
-            if (categoryId.HasValue && categoryId.Value > 0)
+            if (!string.IsNullOrEmpty(categoryId))
             {
-                query = query.Where(sp => sp.MaDanhMuc == categoryId.Value);
+                query = query.Where(sp => sp.MaDanhMuc == categoryId);
             }
             
             int totalItems = query.Count();
@@ -92,6 +85,23 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Tự động tạo mã sản phẩm mới (SP001, SP002, ...)
+                var lastSanPham = db.SanPhams.OrderByDescending(sp => sp.MaSP).FirstOrDefault();
+                string newMaSP = "SP001";
+                
+                if (lastSanPham != null && lastSanPham.MaSP.StartsWith("SP"))
+                {
+                    // Lấy số từ mã cuối cùng
+                    string numberPart = lastSanPham.MaSP.Substring(2);
+                    if (int.TryParse(numberPart, out int lastNumber))
+                    {
+                        int newNumber = lastNumber + 1;
+                        newMaSP = "SP" + newNumber.ToString("D3"); // D3 để format 001, 002, ...
+                    }
+                }
+                
+                model.MaSP = newMaSP;
+
                 // Upload ảnh
                 if (fileUpload != null && fileUpload.ContentLength > 0)
                 {
@@ -119,7 +129,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
 
         [HttpGet]
-        public ActionResult Edit_SP(int id)
+        public ActionResult Edit_SP(string id)
         {
             ViewBag.Title = "Chỉnh sửa sản phẩm";
             var sp = db.SanPhams.Find(id);
@@ -178,7 +188,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete_SP(int id)
+        public ActionResult Delete_SP(string id)
         {
             var sp = db.SanPhams.Find(id);
             if (sp == null) return HttpNotFound();
@@ -230,7 +240,26 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         {
             if (!string.IsNullOrEmpty(TenDanhMuc))
             {
-                var dm = new DanhMuc { TenDanhMuc = TenDanhMuc };
+                // Tự động tạo mã danh mục mới (DM01, DM02, ...)
+                var lastDanhMuc = db.DanhMucs.OrderByDescending(DM => DM.MaDanhMuc).FirstOrDefault();
+                string newMaDanhMuc = "DM01";
+                
+                if (lastDanhMuc != null && lastDanhMuc.MaDanhMuc.StartsWith("DM"))
+                {
+                    // Lấy số từ mã cuối cùng
+                    string numberPart = lastDanhMuc.MaDanhMuc.Substring(2);
+                    if (int.TryParse(numberPart, out int lastNumber))
+                    {
+                        int newNumber = lastNumber + 1;
+                        newMaDanhMuc = "DM" + newNumber.ToString("D2"); // D2 để format 01, 02, ...
+                    }
+                }
+                
+                var dm = new DanhMuc 
+                { 
+                    MaDanhMuc = newMaDanhMuc,
+                    TenDanhMuc = TenDanhMuc 
+                };
                 db.DanhMucs.Add(dm);
                 db.SaveChanges();
                 TempData["Success"] = "Thêm danh mục thành công!";
@@ -239,7 +268,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit_DanhMuc(int id, string TenDanhMuc)
+        public ActionResult Edit_DanhMuc(string id, string TenDanhMuc)
         {
             var dm = db.DanhMucs.Find(id);
             if (dm != null && !string.IsNullOrEmpty(TenDanhMuc))
@@ -252,7 +281,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete_DanhMuc(int id)
+        public ActionResult Delete_DanhMuc(string id)
         {
             var dm = db.DanhMucs.Find(id);
             if (dm != null)
@@ -312,6 +341,23 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                     TempData["Error"] = "Tên đăng nhập đã tồn tại!";
                     return RedirectToAction("DS_NV");
                 }
+
+                // Tự động tạo mã nhân viên mới (NV001, NV002, ...)
+                var lastNhanVien = db.NhanViens.OrderByDescending(nv => nv.MaNV).FirstOrDefault();
+                string newMaNV = "NV001";
+                
+                if (lastNhanVien != null && lastNhanVien.MaNV.StartsWith("NV"))
+                {
+                    // Lấy số từ mã cuối cùng
+                    string numberPart = lastNhanVien.MaNV.Substring(2);
+                    if (int.TryParse(numberPart, out int lastNumber))
+                    {
+                        int newNumber = lastNumber + 1;
+                        newMaNV = "NV" + newNumber.ToString("D3"); // D3 để format 001, 002, ...
+                    }
+                }
+                
+                model.MaNV = newMaNV;
 
                 db.NhanViens.Add(model);
                 db.SaveChanges();
@@ -374,7 +420,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete_NV(int id)
+        public ActionResult Delete_NV(string id)
         {
             var nv = db.NhanViens.Find(id);
             if (nv != null)
@@ -426,7 +472,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             return View(khachHangs);
         }
         
-        public ActionResult Detail_KH(int id)
+        public ActionResult Detail_KH(string id)
         {
             ViewBag.Title = "Chi tiết Khách hàng";
             var khachHang = db.KhachHangs.Find(id);
@@ -434,6 +480,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             
             // Lấy tất cả đơn hàng của khách hàng, sắp xếp theo ngày đặt mới nhất
             var donHangs = db.DonHangs
+                .Include(dh => dh.ChiTietDonHangs)
                 .Where(dh => dh.MaKH == id)
                 .OrderByDescending(dh => dh.NgayDat)
                 .ToList();
@@ -469,8 +516,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             int selectedYear = year ?? DateTime.Now.Year;
             int? selectedMonth = month;
 
-            // Lấy dữ liệu doanh thu
-            var query = db.DonHangs.Where(dh => dh.TrangThai == "Đã giao" || dh.TrangThai == "Hoàn thành");
+            // Lấy dữ liệu doanh thu (chỉ lấy đơn hàng đã hoàn thành)
+            var query = db.DonHangs.Where(dh => dh.TrangThai == "HOANTHANH" && dh.DaThanhToan == true);
             
             if (selectedMonth.HasValue)
             {
@@ -481,15 +528,26 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 query = query.Where(dh => dh.NgayDat.Year == selectedYear);
             }
 
-            var donHangs = query.ToList();
+            var donHangs = query.Include(dh => dh.ChiTietDonHangs).ToList();
             
-            // Tính tổng doanh thu
+            // Tính tổng doanh thu (dùng TongTien từ DonHang nếu có, nếu không thì tính từ ChiTietDonHang)
             decimal tongDoanhThu = 0;
             foreach (var dh in donHangs)
             {
-                foreach (var ct in dh.ChiTietDonHangs)
+                if (dh.TongTien.HasValue)
                 {
-                    tongDoanhThu += ct.SoLuong * ct.DonGia;
+                    tongDoanhThu += dh.TongTien.Value;
+                }
+                else
+                {
+                    foreach (var ct in dh.ChiTietDonHangs)
+                    {
+                        tongDoanhThu += ct.SoLuong * ct.DonGia;
+                    }
+                    if (dh.PhiVanChuyen.HasValue)
+                    {
+                        tongDoanhThu += dh.PhiVanChuyen.Value;
+                    }
                 }
             }
 
@@ -509,9 +567,20 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                     decimal doanhThuThang = 0;
                     foreach (var dh in dhThang)
                     {
-                        foreach (var ct in dh.ChiTietDonHangs)
+                        if (dh.TongTien.HasValue)
                         {
-                            doanhThuThang += ct.SoLuong * ct.DonGia;
+                            doanhThuThang += dh.TongTien.Value;
+                        }
+                        else
+                        {
+                            foreach (var ct in dh.ChiTietDonHangs)
+                            {
+                                doanhThuThang += ct.SoLuong * ct.DonGia;
+                            }
+                            if (dh.PhiVanChuyen.HasValue)
+                            {
+                                doanhThuThang += dh.PhiVanChuyen.Value;
+                            }
                         }
                     }
                     dataByMonth.Add(new { month = m, revenue = doanhThuThang });
@@ -529,9 +598,20 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                     decimal doanhThuNgay = 0;
                     foreach (var dh in dhNgay)
                     {
-                        foreach (var ct in dh.ChiTietDonHangs)
+                        if (dh.TongTien.HasValue)
                         {
-                            doanhThuNgay += ct.SoLuong * ct.DonGia;
+                            doanhThuNgay += dh.TongTien.Value;
+                        }
+                        else
+                        {
+                            foreach (var ct in dh.ChiTietDonHangs)
+                            {
+                                doanhThuNgay += ct.SoLuong * ct.DonGia;
+                            }
+                            if (dh.PhiVanChuyen.HasValue)
+                            {
+                                doanhThuNgay += dh.PhiVanChuyen.Value;
+                            }
                         }
                     }
                     dataByDay.Add(new { day = d, revenue = doanhThuNgay });

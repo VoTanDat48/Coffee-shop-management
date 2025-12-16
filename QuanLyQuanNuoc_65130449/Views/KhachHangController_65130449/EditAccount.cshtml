@@ -4,100 +4,138 @@
     Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
 }
 
-<h2 class="text-2xl font-bold mb-4">Chỉnh sửa thông tin</h2>
-@if (ViewBag.Success != null)
-{
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-        @ViewBag.Success
-    </div>
-}
+<div class="min-h-screen bg-gradient-to-br from-sky-50 to-emerald-50 flex justify-center items-start py-16">
+    <div class="max-w-xl w-full px-4">
 
-@using (Html.BeginForm("EditAccount", "KhachHangController_65130449", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.MaKH)
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-2">Chỉnh sửa Tài khoản</h2>
+            <p class="text-gray-500 text-lg">Cập nhật thông tin cá nhân và mật khẩu</p>
+        </div>
 
-    <div class="mb-4">
-        <label>Họ và Tên</label>
-        @Html.TextBoxFor(m => m.HoTen, new { @class = "w-full border px-3 py-2 rounded" })
-    </div>
-
-    <div class="mb-4">
-        <label>Số điện thoại</label>
-        @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "w-full border px-3 py-2 rounded" })
-    </div>
-
-    <div class="mb-4">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "w-full border px-3 py-2 rounded" })
-    </div>
-
-    <hr class="my-4" />
-
-    <h3 class="font-semibold mb-2">Đổi mật khẩu</h3>
-
-    <div>
-        <label>Mật khẩu cũ</label>
-        <input type="password" name="MatKhauCu" class="border p-2 w-full" />
-    </div>
-
-    <div class="mt-4">
-        <label>Mật khẩu mới</label>
-        <input type="password" id="MatKhauMoi" name="MatKhauMoi"
-               class="border p-2 w-full rounded" />
-    </div>
-
-    <div class="mt-4">
-        <label>Xác nhận mật khẩu</label>
-        <input type="password" id="XacNhanMatKhau" name="XacNhanMatKhau"
-               class="border p-2 w-full rounded" />
-
-        <!-- Hiển thị lỗi của ô xác nhận -->
-        @Html.ValidationMessage("XacNhanMatKhau", "", new { @class = "text-red-600 text-sm mt-1 block" })
-    </div>
-
-
-    <!-- Checkbox hiện mật khẩu -->
-    <div class="mt-2 flex items-center">
-        <input type="checkbox" id="togglePassword" class="mr-2" onclick="showPassword()" />
-        <label for="togglePassword" class="cursor-pointer">Hiện mật khẩu</label>
-    </div>
-
-    <script>
-        function showPassword() {
-            var pw1 = document.getElementById("MatKhauMoi");
-            var pw2 = document.getElementById("XacNhanMatKhau");
-            var chk = document.getElementById("togglePassword");
-
-            if (chk.checked) {
-                pw1.type = "text";
-                pw2.type = "text";
-            } else {
-                pw1.type = "password";
-                pw2.type = "password";
-            }
+        @if (TempData["Success"] != null)
+        {
+            <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 font-semibold px-4 py-3 rounded-xl mb-6 shadow-md shadow-emerald-200/50">
+                <i class="fa fa-circle-check mr-2"></i> @TempData["Success"]
+            </div>
         }
-    </script>
 
-    <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded shadow-md shadow-emerald-200/70">
-        Lưu thay đổi
-    </button>
-    <!-- Nút quay lại hồ sơ -->
-    <a href="@Url.Action("MyAccount", "KhachHangController_65130449")"
-       class="inline-block mb-4 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">
-        ← Quay lại hồ sơ
-    </a>
+        @if (ViewBag.Error != null)
+        {
+            <div class="bg-red-100 border border-red-400 text-red-700 font-semibold px-4 py-3 rounded-xl mb-6 shadow-md shadow-red-200/50">
+                <i class="fa fa-triangle-exclamation mr-2"></i> @ViewBag.Error
+            </div>
+        }
 
-}
+        <!-- HIỂN THỊ VALIDATION SUMMARY -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fa fa-exclamation-triangle text-red-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700 font-medium">
+                            Vui lòng sửa các lỗi sau:
+                        </p>
+                        <div class="mt-2 text-sm text-red-700">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
+        @using (Html.BeginForm("EditAccount", "KhachHangController_65130449", FormMethod.Post, new { @class = "bg-white p-8 rounded-3xl shadow-2xl border-t-4 border-sky-500" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.MaKH)
+            @Html.HiddenFor(m => m.TenDangNhap) <!-- THÊM DÒNG NÀY -->
 
+            <h3 class="text-2xl font-bold text-gray-700 mb-5 border-b border-gray-100 pb-3"><i class="fa fa-id-card mr-2 text-sky-500"></i> Thông tin Cá nhân</h3>
 
+            <div class="space-y-5 mb-8">
 
-@section scripts{
-    <script>
-        document.getElementById("showPassword").addEventListener("change", function () {
-            var pwd = document.getElementById("password");
-            pwd.type = this.checked ? "text" : "password";
+                <div class="relative">
+                    <label class="block text-gray-700 font-medium mb-1">Họ và Tên</label>
+                    <span class="absolute inset-y-0 left-0 top-6 flex items-center pl-3 text-gray-400"><i class="fa fa-address-card"></i></span>
+                    @Html.TextBoxFor(m => m.HoTen, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "Nhập Họ và Tên" })
+                    @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-red-600 font-medium text-sm mt-1 block" })
+                </div>
+
+                <div class="relative">
+                    <label class="block text-gray-700 font-medium mb-1">Số điện thoại</label>
+                    <span class="absolute inset-y-0 left-0 top-6 flex items-center pl-3 text-gray-400"><i class="fa fa-phone"></i></span>
+                    @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "Nhập Số điện thoại" })
+                    @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-red-600 font-medium text-sm mt-1 block" })
+                </div>
+
+                <div class="relative">
+                    @Html.LabelFor(m => m.Email, new { @class = "block text-gray-700 font-medium mb-1" })
+                    <span class="absolute inset-y-0 left-0 top-6 flex items-center pl-3 text-gray-400"><i class="fa fa-envelope"></i></span>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition duration-200", placeholder = "Nhập Email" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-red-600 font-medium text-sm mt-1 block" })
+                </div>
+
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-700 mb-5 border-b border-gray-100 pb-3 mt-10"><i class="fa fa-shield-halved mr-2 text-emerald-500"></i> Đổi mật khẩu</h3>
+
+            <div class="space-y-5">
+
+                <div class="relative">
+                    <label class="block text-gray-700 font-medium mb-1">Mật khẩu cũ</label>
+                    <span class="absolute inset-y-0 left-0 top-6 flex items-center pl-3 text-gray-400"><i class="fa fa-lock"></i></span>
+                    <input type="password" name="MatKhauCu" class="w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition duration-200" placeholder="Chỉ nhập khi muốn đổi mật khẩu" />
+                    @Html.ValidationMessage("MatKhauCu", "", new { @class = "text-red-600 font-medium text-sm mt-1 block" })
+                </div>
+
+                <div class="relative">
+                    <label class="block text-gray-700 font-medium mb-1">Mật khẩu mới</label>
+                    <span class="absolute inset-y-0 left-0 top-6 flex items-center pl-3 text-gray-400"><i class="fa fa-key"></i></span>
+                    <input type="password" id="MatKhauMoi" name="MatKhauMoi"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition duration-200" placeholder="Mật khẩu mới" />
+                    @Html.ValidationMessage("MatKhauMoi", "", new { @class = "text-red-600 font-medium text-sm mt-1 block" })
+                </div>
+
+                <div class="relative">
+                    <label class="block text-gray-700 font-medium mb-1">Xác nhận mật khẩu</label>
+                    <span class="absolute inset-y-0 left-0 top-6 flex items-center pl-3 text-gray-400"><i class="fa fa-circle-check"></i></span>
+                    <input type="password" id="XacNhanMatKhau" name="XacNhanMatKhau"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-3 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition duration-200" placeholder="Xác nhận lại mật khẩu mới" />
+                    @Html.ValidationMessage("XacNhanMatKhau", "", new { @class = "text-red-600 font-medium text-sm mt-1 block" })
+                </div>
+
+                <div class="pt-2 flex items-center justify-end">
+                    <input type="checkbox" id="togglePassword" class="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 mr-2 cursor-pointer" onclick="showPassword()" />
+                    <label for="togglePassword" class="text-gray-600 text-sm cursor-pointer">Hiện mật khẩu</label>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-between items-center">
+                <button type="submit" class="inline-flex items-center bg-sky-500 hover:bg-sky-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-sky-300/50 transition duration-300 transform hover:scale-[1.01]">
+                    <i class="fa fa-floppy-disk mr-2"></i> Lưu thay đổi
+                </button>
+
+                <a href="@Url.Action("MyAccount", "KhachHangController_65130449")"
+                   class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-xl transition duration-200">
+                    <i class="fa fa-arrow-left mr-2"></i> Quay lại hồ sơ
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function showPassword() {
+        var pwFields = ["MatKhauMoi", "XacNhanMatKhau", "MatKhauCu"];
+        var chk = document.getElementById("togglePassword");
+
+        pwFields.forEach(function (id) {
+            var input = document.getElementById(id);
+            if (input) {
+                input.type = chk.checked ? "text" : "password";
+            }
         });
-    </script>
-}
+    }
+</script>

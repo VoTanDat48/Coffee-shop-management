@@ -62,7 +62,7 @@
                                     <input type="text" name="TenDanhMuc" value="@dm.TenDanhMuc" required
                                            class="flex-1 border border-gray-300 rounded px-2 py-1 text-sm" />
                                     <button type="submit" class="bg-sky-500 text-white px-3 py-1 rounded text-sm">Lưu</button>
-                                    <button type="button" onclick="cancelEdit(@dm.MaDanhMuc)" class="bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm">Hủy</button>
+                                    <button type="button" onclick="cancelEdit('@dm.MaDanhMuc')" class="bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm">Hủy</button>
                                 </div>
                             </form>
                         </td>
@@ -71,7 +71,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
-                                <button onclick="editDanhMuc(@dm.MaDanhMuc)" class="text-sky-600 hover:text-sky-900">
+                                <button onclick="editDanhMuc('@dm.MaDanhMuc')" class="text-sky-600 hover:text-sky-900">
                                     <i class="fas fa-edit"></i> Sửa
                                 </button>
                                 <form method="post" action="@Url.Action("Delete_DanhMuc", "AdminController_65130449", new { id = dm.MaDanhMuc })" 
@@ -98,12 +98,20 @@
 
 <script>
     function editDanhMuc(id) {
-        document.getElementById('name-' + id).classList.add('hidden');
-        document.getElementById('edit-form-' + id).classList.remove('hidden');
+        var nameId = 'name-' + id;
+        var formId = 'edit-form-' + id;
+        if (document.getElementById(nameId) && document.getElementById(formId)) {
+            document.getElementById(nameId).classList.add('hidden');
+            document.getElementById(formId).classList.remove('hidden');
+        }
     }
 
     function cancelEdit(id) {
-        document.getElementById('name-' + id).classList.remove('hidden');
-        document.getElementById('edit-form-' + id).classList.add('hidden');
+        var nameId = 'name-' + id;
+        var formId = 'edit-form-' + id;
+        if (document.getElementById(nameId) && document.getElementById(formId)) {
+            document.getElementById(nameId).classList.remove('hidden');
+            document.getElementById(formId).classList.add('hidden');
+        }
     }
 </script>

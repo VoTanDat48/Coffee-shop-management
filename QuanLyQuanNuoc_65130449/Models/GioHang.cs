@@ -12,30 +12,20 @@ namespace QuanLyQuanNuoc_65130449.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class DonHang
+    public partial class GioHang
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public DonHang()
+        public GioHang()
         {
-            this.ChiTietDonHangs = new HashSet<ChiTietDonHang>();
+            this.ChiTietGioHangs = new HashSet<ChiTietGioHang>();
         }
     
-        public string MaDonHang { get; set; }
+        public string MaGioHang { get; set; }
         public string MaKH { get; set; }
-        public System.DateTime NgayDat { get; set; }
-        public string TrangThai { get; set; }
-        public string DiaChiGiaoHang { get; set; }
-        public Nullable<decimal> PhiVanChuyen { get; set; }
-        public Nullable<decimal> TongTien { get; set; }
-        public Nullable<bool> DaThanhToan { get; set; }
-        public Nullable<System.DateTime> NgayThanhToan { get; set; }
-        public string NhanVienDuyet { get; set; }
-        public string NhanVienGiao { get; set; }
+        public Nullable<System.DateTime> NgayCapNhat { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public virtual ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
         public virtual KhachHang KhachHang { get; set; }
-        public virtual NhanVien NhanVien { get; set; }
-        public virtual NhanVien NhanVien1 { get; set; }
     }
 }

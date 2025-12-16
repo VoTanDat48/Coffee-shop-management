@@ -21,7 +21,7 @@ namespace QuanLyQuanNuoc_65130449.Models
             this.DonHangs1 = new HashSet<DonHang>();
         }
     
-        public int MaNV { get; set; }
+        public string MaNV { get; set; }
         public string HoTen { get; set; }
         public string SoDienThoai { get; set; }
         public string TenDangNhap { get; set; }
