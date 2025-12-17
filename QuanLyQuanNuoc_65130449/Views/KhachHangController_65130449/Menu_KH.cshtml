@@ -7,6 +7,20 @@
     string selectedCategoryId = ViewBag.SelectedCategoryId as string;
 }
 
+@if (TempData["CartMsg"] != null)
+{
+    <div class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[9999] w-auto min-w-[300px] max-w-md">
+        <div class="bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center justify-center space-x-3 animate-bounce-in">
+            <i class="fas fa-cart-plus text-xl"></i>
+            <span class="font-medium">@TempData["CartMsg"]</span>
+            @* Nút đóng nhanh *@
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+}
+
 <div class="max-w-6xl mx-auto px-4 py-16">
 
     <div class="text-center mb-12">
@@ -98,12 +112,12 @@
                                 @String.Format("{0:N0}", sp.DonGia)₫
                             </span>
 
-                            <a href="@Url.Action("AddToCart", "Cart_65130449", new { productId = sp.MaSP })"
-                               class="flex items-center px-5 py-2.5 rounded-full text-white bg-emerald-500
-                                      hover:bg-emerald-600 transition-colors duration-200 font-semibold
-                                      shadow-lg shadow-emerald-300/60">
+                            <button onclick="openAddToCartModal('@sp.MaSP', '@sp.TenSP', '@String.Format("{0:N0}", sp.DonGia)')"
+                                    class="flex items-center px-5 py-2.5 rounded-full text-white bg-emerald-500
+                                           hover:bg-emerald-600 transition-colors duration-200 font-semibold
+                                           shadow-lg shadow-emerald-300/60">
                                 <i class="fa fa-basket-shopping mr-2"></i> Thêm vào Giỏ
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -116,7 +130,7 @@
                 <ul class="inline-flex items-center space-x-2">
                     @{
                         var routeValues = new System.Web.Routing.RouteValueDictionary
-                            {
+                                    {
                             { "search", search },
                             { "categoryId", selectedCategoryId }
                         };
@@ -180,3 +194,125 @@
         </div>
     }
 </div>
+
+<!-- Modal Thêm vào giỏ hàng -->
+<div id="addToCartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-shopping-cart text-emerald-500 mr-2"></i>Thêm vào giỏ hàng
+                </h3>
+                <button onclick="closeAddToCartModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <p class="text-lg font-semibold text-gray-800 mb-2" id="modal-product-name"></p>
+                <p class="text-2xl font-bold text-sky-600" id="modal-product-price"></p>
+            </div>
+
+            <form id="addToCartForm" onsubmit="submitAddToCart(event)">
+                <input type="hidden" id="modal-product-id" />
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Số lượng <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <button type="button" onclick="decreaseModalQuantity()"
+                                class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition font-bold text-gray-600">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number"
+                               id="modal-quantity"
+                               value="1"
+                               min="1"
+                               max="999"
+                               required
+                               class="flex-1 text-center text-lg font-semibold border-2 border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                        <button type="button" onclick="increaseModalQuantity()"
+                                class="w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition font-bold text-gray-600">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button type="button"
+                            onclick="closeAddToCartModal()"
+                            class="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-semibold">
+                        Hủy
+                    </button>
+                    <button type="submit"
+                            class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-semibold shadow-lg shadow-emerald-300/50">
+                        <i class="fas fa-check mr-2"></i>Xác nhận
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddToCartModal(productId, productName, productPrice) {
+        $('#modal-product-id').val(productId);
+        $('#modal-product-name').text(productName);
+        $('#modal-product-price').text(productPrice + '₫');
+        $('#modal-quantity').val(1);
+        $('#addToCartModal').removeClass('hidden');
+    }
+
+    function closeAddToCartModal() {
+        $('#addToCartModal').addClass('hidden');
+    }
+
+    function increaseModalQuantity() {
+        var qtyInput = $('#modal-quantity');
+        var currentValue = parseInt(qtyInput.val()) || 1;
+        qtyInput.val(currentValue + 1);
+    }
+
+    function decreaseModalQuantity() {
+        var qtyInput = $('#modal-quantity');
+        var currentValue = parseInt(qtyInput.val()) || 1;
+        if (currentValue > 1) {
+            qtyInput.val(currentValue - 1);
+        }
+    }
+
+    function submitAddToCart(event) {
+        event.preventDefault();
+
+        var productId = $('#modal-product-id').val();
+        var quantity = parseInt($('#modal-quantity').val()) || 1;
+
+        // Chuyển đến action AddToCart với số lượng
+        window.location.href = '@Url.Action("AddToCart", "KhachHangController_65130449")?productId=' + productId + '&quantity=' + quantity;
+    }
+
+    // Đóng modal khi click bên ngoài
+    $('#addToCartModal').on('click', function(e) {
+        if (e.target === this) {
+            closeAddToCartModal();
+        }
+    });
+
+    // Đóng modal khi nhấn ESC
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAddToCartModal();
+        }
+    });
+</script>
+<script>
+    setTimeout(function () {
+        const alert = document.querySelector('.fixed.top-5');
+        if (alert) {
+            alert.style.transition = "opacity 0.5s ease";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 3000); // 3000ms = 3 giây
+</script>

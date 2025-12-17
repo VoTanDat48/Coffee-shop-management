@@ -1,0 +1,157 @@
+﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.DonHang>
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
+    var trangThaiDict = ViewBag.TrangThaiDict as Dictionary<string, string> ?? new Dictionary<string, string>();
+}
+
+<div class="max-w-6xl mx-auto px-4 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-extrabold text-sky-700 mb-3 relative inline-block pb-1">
+            Đơn Hàng Của Tôi
+            <span class="absolute bottom-0 left-0 w-full h-1 bg-emerald-400 rounded-full transform scale-x-75"></span>
+        </h2>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+            <i class="fas fa-check-circle mr-2"></i>@TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <i class="fas fa-exclamation-circle mr-2"></i>@TempData["Error"]
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="space-y-6">
+            @foreach (var donHang in Model)
+            {
+                <div class="bg-white rounded-xl shadow-xl border border-sky-100 overflow-hidden hover:shadow-2xl transition">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <div class="mb-4 md:mb-0">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                    Mã đơn hàng: <span class="text-sky-600">@donHang.MaDonHang</span>
+                                </h3>
+                                <p class="text-sm text-gray-600">
+                                    <i class="far fa-calendar mr-2"></i>
+                                    Ngày đặt: @donHang.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    @donHang.DiaChiGiaoHang
+                                </p>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                @{
+                                    string trangThaiText = trangThaiDict.ContainsKey(donHang.TrangThai) 
+                                        ? trangThaiDict[donHang.TrangThai] 
+                                        : donHang.TrangThai;
+                                    string trangThaiClass = "px-4 py-2 rounded-full font-semibold text-sm";
+                                    
+                                    switch (donHang.TrangThai)
+                                    {
+                                        case "CHODUYET":
+                                            trangThaiClass += " bg-yellow-100 text-yellow-800";
+                                            break;
+                                        case "DADUYET":
+                                        case "DANGPHACHE":
+                                            trangThaiClass += " bg-blue-100 text-blue-800";
+                                            break;
+                                        case "DANGGIAO":
+                                            trangThaiClass += " bg-purple-100 text-purple-800";
+                                            break;
+                                        case "HOANTHANH":
+                                            trangThaiClass += " bg-green-100 text-green-800";
+                                            break;
+                                        case "HUY":
+                                            trangThaiClass += " bg-red-100 text-red-800";
+                                            break;
+                                        default:
+                                            trangThaiClass += " bg-gray-100 text-gray-800";
+                                            break;
+                                    }
+                                }
+                                <span class="@trangThaiClass mb-3">
+                                    @if (donHang.TrangThai == "CHODUYET")
+                                    {
+                                        <i class="fas fa-clock mr-1"></i>
+                                    }
+                                    else if (donHang.TrangThai == "DANGPHACHE")
+                                    {
+                                        <i class="fas fa-coffee mr-1"></i>
+                                    }
+                                    else if (donHang.TrangThai == "DANGGIAO")
+                                    {
+                                        <i class="fas fa-truck mr-1"></i>
+                                    }
+                                    else if (donHang.TrangThai == "HOANTHANH")
+                                    {
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                    }
+                                    else if (donHang.TrangThai == "HUY")
+                                    {
+                                        <i class="fas fa-times-circle mr-1"></i>
+                                    }
+                                    @trangThaiText
+                                </span>
+                                
+                                @if (donHang.DaThanhToan == true)
+                                {
+                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold">
+                                        <i class="fas fa-check mr-1"></i>Đã thanh toán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-semibold">
+                                        <i class="fas fa-hourglass-half mr-1"></i>Chưa thanh toán
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 mt-4">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div class="mb-4 md:mb-0">
+                                    <p class="text-sm text-gray-600 mb-1">
+                                        <span class="font-semibold">Phí vận chuyển:</span> 
+                                        @String.Format("{0:N0}", donHang.PhiVanChuyen ?? 0)₫
+                                    </p>
+                                    <p class="text-lg font-bold text-sky-600">
+                                        <span class="text-gray-700">Tổng tiền:</span> 
+                                        @String.Format("{0:N0}", donHang.TongTien ?? 0)₫
+                                    </p>
+                                </div>
+                                <a href="@Url.Action("OrderDetails", "KhachHangController_65130449", new { id = donHang.MaDonHang })" 
+                                   class="inline-flex items-center px-5 py-2.5 bg-sky-500 text-white rounded-xl hover:bg-sky-600 transition font-semibold">
+                                    <i class="fas fa-eye mr-2"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-20 bg-sky-50 rounded-3xl border-4 border-dashed border-sky-200">
+            <div class="text-7xl mb-5 text-sky-500">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h3 class="text-3xl font-extrabold text-sky-700 mb-3">Chưa có đơn hàng nào</h3>
+            <p class="text-gray-600 text-lg mb-6">Hãy đặt hàng để xem đơn hàng của bạn tại đây!</p>
+            <a href="@Url.Action("Menu_KH", "KhachHangController_65130449")" 
+               class="inline-flex items-center px-6 py-3 bg-sky-500 text-white rounded-xl hover:bg-sky-600 transition font-semibold shadow-lg shadow-sky-300/50">
+                <i class="fas fa-shopping-cart mr-2"></i> Xem thực đơn
+            </a>
+        </div>
+    }
+</div>

@@ -36,7 +36,7 @@
                     </a>
 
                     <!-- Giỏ hàng -->
-                    <a href="@Url.Action("Cart", "Home_65130449")"
+                    <a href="@Url.Action("Cart", "KhachHangController_65130449")"
                        class="px-4 py-2 text-gray-700 hover:text-sky-600 hover:bg-sky-50 rounded-lg font-medium relative transition">
                         <i class="fas fa-shopping-cart mr-2"></i>Giỏ hàng
                         @if (Session["CartCount"] != null && (int)Session["CartCount"] > 0)
@@ -130,6 +130,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

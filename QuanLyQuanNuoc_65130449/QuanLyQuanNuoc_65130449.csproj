@@ -270,6 +270,10 @@
     <Content Include="Views\AdminController_65130449\Detail_KH.cshtml" />
     <Content Include="Views\AdminController_65130449\TimKiemSP.cshtml" />
     <Content Include="Views\AdminController_65130449\TimKiemNV.cshtml" />
+    <Content Include="Views\KhachHangController_65130449\Cart.cshtml" />
+    <Content Include="Views\KhachHangController_65130449\MyOrders.cshtml" />
+    <Content Include="Views\KhachHangController_65130449\Checkout.cshtml" />
+    <Content Include="Views\KhachHangController_65130449\OrderDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,221 @@
+﻿@{
+    ViewBag.Title = "Thanh toán";
+    Layout = "~/Views/Shared/_LayoutKhachHang.cshtml";
+    var chiTietGioHangs = ViewBag.ChiTietGioHangs as List<QuanLyQuanNuoc_65130449.Models.ChiTietGioHang>;
+    decimal tongTien = ViewBag.TongTien != null ? (decimal)ViewBag.TongTien : 0;
+    decimal phiVanChuyenMacDinh = 15000;
+    var khachHang = ViewBag.KhachHang as QuanLyQuanNuoc_65130449.Models.KhachHang;
+}
+
+<div class="max-w-6xl mx-auto px-4 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-extrabold text-sky-700 mb-3 relative inline-block">
+            Thanh Toán Đơn Hàng
+            <span class="absolute bottom-0 left-0 w-full h-1 bg-sky-200 rounded-full"></span>
+        </h2>
+        <p class="text-gray-500">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận đơn hàng</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-2xl border border-sky-50 p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                    <span class="bg-emerald-100 p-2 rounded-lg mr-3">
+                        <i class="fas fa-truck text-emerald-600"></i>
+                    </span>
+                    Thông tin giao hàng
+                </h3>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg text-red-700 flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3"></i> @TempData["Error"]
+                    </div>
+                }
+
+                @using (Html.BeginForm("Checkout", "KhachHangController_65130449", FormMethod.Post, new { @id = "checkoutForm", @class = "space-y-8" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-600 ml-1">Họ tên người nhận</label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-4 top-4 text-gray-400"></i>
+                                <input type="text" value="@(khachHang?.HoTen ?? "N/A")"
+                                       class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed" disabled />
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-600 ml-1">Số điện thoại</label>
+                            <div class="relative">
+                                <i class="fas fa-phone absolute left-4 top-4 text-gray-400"></i>
+                                <input type="text" value="@(khachHang?.SoDienThoai ?? "N/A")"
+                                       class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed" disabled />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-gray-600 ml-1">Địa chỉ nhận hàng <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-4 top-4 text-gray-400"></i>
+                            <textarea name="diaChiGiaoHang" rows="3" required placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
+                                      class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-sky-100 focus:border-sky-500 transition-all outline-none">@Request.Form["diaChiGiaoHang"]</textarea>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="text-sm font-semibold text-gray-600 ml-1 text-sky-700">Chọn phương thức vận chuyển</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <label class="relative flex flex-col p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md shipping-option border-sky-500 bg-sky-50" data-fee="15000">
+                                <input type="radio" name="phiVanChuyen" value="15000" class="hidden" checked>
+                                <span class="text-[10px] font-bold text-sky-600 uppercase mb-1 tracking-wider">Tiêu chuẩn</span>
+                                <span class="text-sm font-bold text-gray-800 italic">Bình thường</span>
+                                <span class="text-lg font-extrabold text-gray-900 mt-2">15,000₫</span>
+                                <i class="fas fa-check-circle absolute top-3 right-3 text-sky-500"></i>
+                            </label>
+
+                            <label class="relative flex flex-col p-4 border-2 border-gray-100 rounded-xl cursor-pointer transition-all hover:shadow-md shipping-option" data-fee="20000">
+                                <input type="radio" name="phiVanChuyen" value="20000" class="hidden">
+                                <span class="text-[10px] font-bold text-orange-600 uppercase mb-1 tracking-wider">Nhanh</span>
+                                <span class="text-sm font-bold text-gray-800 italic">Siêu tốc</span>
+                                <span class="text-lg font-extrabold text-gray-900 mt-2">20,000₫</span>
+                                <i class="fas fa-check-circle absolute top-3 right-3 text-transparent"></i>
+                            </label>
+
+                            <label class="relative flex flex-col p-4 border-2 border-gray-100 rounded-xl cursor-pointer transition-all hover:shadow-md shipping-option" data-fee="25000">
+                                <input type="radio" name="phiVanChuyen" value="25000" class="hidden">
+                                <span class="text-[10px] font-bold text-red-600 uppercase mb-1 tracking-wider">Hỏa tốc</span>
+                                <span class="text-sm font-bold text-gray-800 italic">Siêu siêu tốc</span>
+                                <span class="text-lg font-extrabold text-gray-900 mt-2">25,000₫</span>
+                                <i class="fas fa-check-circle absolute top-3 right-3 text-transparent"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 pt-6">
+                        <a href="@Url.Action("Cart", "KhachHangController_65130449")"
+                           class="flex-1 py-4 px-6 border-2 border-gray-200 text-gray-600 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all font-bold text-center flex items-center justify-center space-x-2">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Quay lại giỏ hàng</span>
+                        </a>
+                        <button type="submit" class="flex-[2] py-4 px-6 bg-gradient-to-r from-sky-600 to-sky-700 text-white rounded-2xl hover:from-sky-700 hover:to-sky-800 transition-all font-bold text-lg shadow-xl shadow-sky-100 flex items-center justify-center space-x-2">
+                            <i class="fas fa-check-circle"></i>
+                            <span>XÁC NHẬN ĐẶT HÀNG</span>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-2xl border border-sky-50 p-6 sticky top-4">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 border-b border-sky-50 pb-4">Đơn hàng của bạn</h3>
+
+                <div class="space-y-4 mb-8 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
+                    @if (chiTietGioHangs != null)
+                    {
+                        foreach (var item in chiTietGioHangs)
+                        {
+                            <div class="flex items-center space-x-4 p-2 rounded-xl hover:bg-sky-50/50 transition-all border border-transparent hover:border-sky-100">
+                                <div class="h-14 w-14 flex-shrink-0">
+                                    @if (item.SanPham != null && !string.IsNullOrEmpty(item.SanPham.HinhAnh))
+                                    {
+                                        <img class="h-14 w-14 rounded-lg object-cover shadow-sm" src="@item.SanPham.HinhAnh" alt="SP" />
+                                    }
+                                    else
+                                    {
+                                        <div class="h-14 w-14 bg-sky-50 rounded-lg flex items-center justify-center text-sky-300"><i class="fas fa-coffee"></i></div>
+                                    }
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold text-gray-800 truncate">@(item.SanPham?.TenSP)</p>
+                                    <p class="text-xs text-gray-400">Số lượng: @item.SoLuong</p>
+                                </div>
+                                <div class="text-sm font-bold text-sky-700">@String.Format("{0:N0}", item.SoLuong * item.DonGiaLucThem)₫</div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="space-y-4 pt-6 border-t-2 border-dashed border-sky-50">
+                    <div class="flex justify-between text-gray-500">
+                        <span>Tạm tính</span>
+                        <span class="font-bold text-gray-800">@String.Format("{0:N0}", tongTien)₫</span>
+                    </div>
+                    <div class="flex justify-between text-gray-500">
+                        <span>Phí vận chuyển</span>
+                        <span class="font-bold text-sky-600" id="shipping-fee">15,000₫</span>
+                    </div>
+                    <div class="flex justify-between items-center text-gray-800 pt-5 border-t border-gray-100">
+                        <span class="text-lg font-bold">Tổng thanh toán</span>
+                        <div class="text-right">
+                            <span class="text-3xl font-black text-emerald-600 block" id="total-amount">@String.Format("{0:N0}", tongTien + 15000)₫</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e0f2fe;
+        border-radius: 10px;
+    }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #bae6fd;
+        }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.shipping-option').on('click', function () {
+            // Reset giao diện các options
+            $('.shipping-option').removeClass('border-sky-500 bg-sky-50 border-orange-500 bg-orange-50 border-red-500 bg-red-50 shadow-md');
+            $('.shipping-option i').addClass('text-transparent').removeClass('text-sky-500 text-orange-500 text-red-500');
+            $('.shipping-option').addClass('border-gray-100');
+
+            // Kích hoạt option hiện tại
+            const fee = parseFloat($(this).data('fee'));
+            const radio = $(this).find('input[type="radio"]');
+            radio.prop('checked', true);
+
+            if(fee === 15000) {
+                $(this).addClass('border-sky-500 bg-sky-50 shadow-md').removeClass('border-gray-100');
+                $(this).find('i').addClass('text-sky-500').removeClass('text-transparent');
+            } else if(fee === 20000) {
+                $(this).addClass('border-orange-500 bg-orange-50 shadow-md').removeClass('border-gray-100');
+                $(this).find('i').addClass('text-orange-500').removeClass('text-transparent');
+            } else {
+                $(this).addClass('border-red-500 bg-red-50 shadow-md').removeClass('border-gray-100');
+                $(this).find('i').addClass('text-red-500').removeClass('text-transparent');
+            }
+
+            // Tính toán lại tiền
+            var tamTinhRaw = '@tongTien'.replace(/,/g, '');
+            var tamTinh = parseFloat(tamTinhRaw) || 0;
+            var tong = tamTinh + fee;
+
+            // Hiệu ứng số chạy nhẹ
+            $('#shipping-fee').fadeOut(100, function() {
+                $(this).text(new Intl.NumberFormat('vi-VN').format(fee) + '₫').fadeIn(100);
+            });
+            $('#total-amount').fadeOut(100, function() {
+                $(this).text(new Intl.NumberFormat('vi-VN').format(tong) + '₫').fadeIn(100);
+            });
+        });
+    });
+</script>
