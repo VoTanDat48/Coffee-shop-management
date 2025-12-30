@@ -1,0 +1,161 @@
+﻿@model QuanLyQuanNuoc_65130449.Models.DonHang
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_LayoutNhanVien.cshtml";
+    
+    var role = Session["VaiTro"] != null ? (int)Session["VaiTro"] : 0;
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <!-- Breadcrumb -->
+        <nav class="mb-8 text-sm text-gray-500">
+            <a href="@Url.Action("DuyetDon", "NhanVienController_65130449")" class="hover:text-sky-600 transition">
+                <i class="fas fa-arrow-left mr-1"></i> Quay lại danh sách
+            </a>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Order Info & Items -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Order Status Card -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Mã đơn hàng</p>
+                            <h1 class="text-2xl font-bold text-gray-800">#@Model.MaDonHang</h1>
+                            <p class="text-sm text-gray-400 mt-1">
+                                Đặt ngày @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                        </div>
+                        <span class="px-4 py-2 rounded-full text-sm font-bold
+                            @if(Model.TrangThai == "CHODUYET") { <text>bg-yellow-100 text-yellow-700</text> }
+                            else if(Model.TrangThai == "DANGPHACHE") { <text>bg-blue-100 text-blue-700</text> }
+                            else if(Model.TrangThai == "DANGGIAO") { <text>bg-purple-100 text-purple-700</text> }
+                            else if(Model.TrangThai == "HOANTHANH") { <text>bg-emerald-100 text-emerald-700</text> }
+                            else { <text>bg-red-100 text-red-700</text> }">
+                            @(ViewBag.TrangThaiDict != null && ViewBag.TrangThaiDict.ContainsKey(Model.TrangThai) ? ViewBag.TrangThaiDict[Model.TrangThai] : Model.TrangThai)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Products List -->
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                    <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-box-open text-sky-500 mr-2"></i> Sản phẩm đã đặt
+                        </h3>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        @foreach (var item in Model.ChiTietDonHangs)
+                        {
+                            <div class="p-6 flex items-center justify-between hover:bg-gray-50 transition">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                                        <img src="@(item.SanPham.HinhAnh ?? "/Images/default-product.png")" 
+                                             alt="@item.SanPham.TenSP" 
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">@item.SanPham.TenSP</h4>
+                                        <p class="text-sm text-gray-500">Đơn giá: @((item.DonGia).ToString("N0")) đ</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-medium text-gray-600">x@(item.SoLuong)</p>
+                                    <p class="font-bold text-sky-600 mt-1">@((item.SoLuong * item.DonGia).ToString("N0")) đ</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="p-6 bg-gray-50 border-t border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Tổng tiền</span>
+                            <span class="text-2xl font-extrabold text-sky-600">@((Model.TongTien ?? 0).ToString("N0")) đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Customer Info -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 sticky top-4">
+                    <h3 class="font-bold text-gray-800 mb-4 pb-2 border-b">Thông tin khách hàng</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mt-1">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-gray-500">Người đặt</p>
+                                <p class="font-medium text-gray-800">@(Model.KhachHang?.HoTen ?? "Khách vãng lai")</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-500 mt-1">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-gray-500">Số điện thoại</p>
+                                <p class="font-medium text-gray-800">@(Model.KhachHang?.SoDienThoai ?? "---")</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 mt-1">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-gray-500">Địa chỉ giao hàng</p>
+                                <p class="font-medium text-gray-800">@Model.DiaChiGiaoHang</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    @if (Model.TrangThai == "CHODUYET" && (role == 1 || role == 3))
+                    {
+                        <div class="mt-8 grid grid-cols-2 gap-3">
+                            <!-- Button Duyệt -->
+                            @using (Html.BeginForm("DuyetDonHang", "NhanVienController_65130449", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="maDonHang" value="@Model.MaDonHang" />
+                                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-200 transition transform hover:-translate-y-0.5">
+                                    <i class="fas fa-check mr-2"></i>Duyệt
+                                </button>
+                            }
+
+                            <!-- Button Từ chối -->
+                            @using (Html.BeginForm("TuChoiDonHang", "NhanVienController_65130449", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="maDonHang" value="@Model.MaDonHang" />
+                                <button type="submit" class="w-full bg-white hover:bg-red-50 text-red-500 border-2 border-red-100 font-bold py-3 px-4 rounded-xl transition transform hover:-translate-y-0.5" onclick="return confirm('Bạn có chắc chắn muốn từ chối đơn hàng này?');">
+                                    <i class="fas fa-times mr-2"></i>Từ chối
+                                </button>
+                            }
+                        </div>
+                    }
+                    else if (Model.TrangThai == "DANGPHACHE")
+                    {
+                        <div class="mt-8 text-center p-4 bg-blue-50 rounded-xl text-blue-700">
+                            <i class="fas fa-check-circle mr-2 mb-2 text-2xl block"></i>
+                            <span class="font-medium">Đơn hàng đã được duyệt</span>
+                            <p class="text-sm opacity-75 mt-1">Đang chờ nhân viên giao hàng nhận đơn.</p>
+                        </div>
+                    }
+                    else
+                    {
+                         <div class="mt-8 text-center">
+                            <!-- Optional status messages here if needed -->
+                         </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

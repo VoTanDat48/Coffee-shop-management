@@ -1,0 +1,156 @@
+﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.DonHang>
+@{
+    ViewBag.Title = "Giao hàng";
+    Layout = "~/Views/Shared/_LayoutNhanVien.cshtml";
+
+    // Lấy mã nhân viên hiện tại từ ViewBag
+    string maNV = ViewBag.MaNV?.ToString() ?? "";
+    
+    // Đơn hàng đã được duyệt (DANGPHACHE) nhưng CHƯA được nhận giao (NhanVienGiao == null)
+    var availableOrders = Model.Where(d => d.TrangThai == "DANGPHACHE" && d.NhanVienGiao == null).ToList();
+    
+    // Đơn hàng đang giao của nhân viên hiện tại (đã nhận để giao)
+    var myOrders = Model.Where(d => d.TrangThai == "DANGGIAO" && d.NhanVienGiao == maNV).ToList();
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold text-gray-800">
+                <i class="fas fa-truck-fast text-sky-600 mr-3"></i>Giao Hàng
+            </h1>
+            <p class="text-gray-500 mt-2">Quản lý các đơn hàng cần giao</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="max-w-4xl mx-auto mb-6 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded relative shadow-sm" role="alert">
+                <span class="block sm:inline"><i class="fas fa-check-circle mr-2"></i> @TempData["Success"]</span>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="max-w-4xl mx-auto mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-sm" role="alert">
+                <span class="block sm:inline"><i class="fas fa-exclamation-circle mr-2"></i> @TempData["Error"]</span>
+            </div>
+        }
+
+        <!-- Section: Đơn đang giao (Ưu tiên hiển thị) -->
+        @if (myOrders.Any())
+        {
+            <div class="mb-12">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center border-l-4 border-sky-500 pl-4">
+                    <span>Đơn hàng bạn đang giao</span>
+                    <span class="ml-3 bg-sky-100 text-sky-600 text-xs px-2 py-1 rounded-full">@myOrders.Count</span>
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach (var order in myOrders)
+                    {
+                        <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-sky-200 hover:shadow-xl transition-shadow duration-300 relative">
+                            <div class="absolute top-0 right-0 bg-sky-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                                Đang giao
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-lg font-bold text-gray-800">#@order.MaDonHang</h3>
+                                    <span class="text-sm text-gray-500">@order.NgayDat.ToString("HH:mm dd/MM")</span>
+                                </div>
+
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-user text-gray-400 w-5 mt-1"></i>
+                                        <span class="text-gray-700 font-medium">@(order.KhachHang?.HoTen ?? "Khách lẻ")</span>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <i class="fas fa-phone text-gray-400 w-5 mt-1"></i>
+                                        <a href="tel:@(order.KhachHang?.SoDienThoai ?? "")" class="text-sky-600 hover:underline">
+                                            @(order.KhachHang?.SoDienThoai ?? "---")
+                                        </a>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <i class="fas fa-map-marker-alt text-red-400 w-5 mt-1"></i>
+                                        <span class="text-gray-700">@order.DiaChiGiaoHang</span>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <i class="fas fa-money-bill-wave text-green-500 w-5 mt-1"></i>
+                                        <span class="text-emerald-600 font-bold">@((order.TongTien ?? 0).ToString("N0")) đ</span>
+                                    </div>
+                                </div>
+
+                                @using (Html.BeginForm("HoanThanhGiaoHang", "NhanVienController_65130449", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="maDonHang" value="@order.MaDonHang" />
+                                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-xl shadow transition transform hover:-translate-y-1" onclick="return confirm('Xác nhận đã giao hàng và thu tiền?');">
+                                        <i class="fas fa-check-double mr-2"></i>Hoàn thành đơn
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Section: Đơn chờ giao -->
+        <div>
+            <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center border-l-4 border-gray-300 pl-4">
+                <span>Đơn hàng chờ nhận</span>
+                <span class="ml-3 bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">@availableOrders.Count</span>
+            </h2>
+
+            @if (availableOrders.Any())
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach (var order in availableOrders)
+                    {
+                        <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-lg font-bold text-gray-800">#@order.MaDonHang</h3>
+                                    <span class="text-sm text-gray-500">@order.NgayDat.ToString("HH:mm dd/MM")</span>
+                                </div>
+
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-map-marker-alt text-gray-400 w-5 mt-1"></i>
+                                        <span class="text-gray-700 line-clamp-2">@order.DiaChiGiaoHang</span>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <i class="fas fa-dollar-sign text-gray-400 w-5 mt-1"></i>
+                                        <span class="text-gray-900 font-semibold">@((order.TongTien ?? 0).ToString("N0")) đ</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex space-x-2">
+                                    <a href="@Url.Action("ChiTietDonHang", "NhanVienController_65130449", new { id = order.MaDonHang })" 
+                                       class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg text-center transition">
+                                        Chi tiết
+                                    </a>
+                                    
+                                    @using (Html.BeginForm("NhanDonHang", "NhanVienController_65130449", FormMethod.Post, new { @class = "flex-1" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="maDonHang" value="@order.MaDonHang" />
+                                        <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition">
+                                            Nhận đơn
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-12 bg-white rounded-2xl border border-gray-100 border-dashed">
+                    <i class="fas fa-box-open text-gray-300 text-5xl mb-4"></i>
+                    <p class="text-gray-500">Hiện tại không có đơn hàng nào chờ giao.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

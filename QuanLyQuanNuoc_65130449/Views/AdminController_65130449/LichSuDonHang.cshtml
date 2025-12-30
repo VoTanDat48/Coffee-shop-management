@@ -1,0 +1,151 @@
+﻿@model IEnumerable<QuanLyQuanNuoc_65130449.Models.DonHang>
+@{
+    ViewBag.Title = "Lịch sử Đơn hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+    @using (Html.BeginForm("LichSuDonHang", "AdminController_65130449", FormMethod.Get))
+    {
+        <input type="hidden" name="page" value="1" />
+        <div class="flex space-x-4">
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" name="search" value="@ViewBag.Search"
+                       placeholder="Tìm theo mã đơn hàng hoặc tên khách hàng..."
+                       class="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 transition" />
+            </div>
+            <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-lg font-medium shadow-md transition">
+                Tìm kiếm
+            </button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+            {
+                <a href="@Url.Action("LichSuDonHang", "AdminController_65130449")"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium transition">
+                    Xóa bộ lọc
+                </a>
+            }
+        </div>
+    }
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Lịch sử Đơn hàng hoàn thành</h2>
+            <p class="text-sm text-gray-500 mt-1">Dữ liệu được sắp xếp theo thời gian hoàn thành mới nhất</p>
+        </div>
+        <span class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-bold shadow-sm">
+            <i class="fas fa-check-circle mr-1"></i> Tổng: @(ViewBag.TotalItems ?? 0) đơn
+        </span>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-fixed divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="w-1/12 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mã đơn</th>
+                        <th class="w-3/12 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Khách hàng</th>
+                        <th class="w-2/12 px-6 py-4 text-left text-xs font-bold text-sky-600 uppercase tracking-wider bg-sky-50/50">
+                            Ngày thanh toán <i class="fas fa-sort-amount-down ml-1"></i>
+                        </th>
+                        <th class="w-2/12 px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Tổng tiền</th>
+                        <th class="w-2/12 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">NV Duyệt</th>
+                        <th class="w-2/12 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">NV Giao</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach (var donHang in Model)
+                    {
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="font-bold text-gray-800">#@donHang.MaDonHang</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-semibold text-gray-900">@(donHang.KhachHang != null ? donHang.KhachHang.HoTen : "N/A")</div>
+                                <div class="text-xs text-gray-500"><i class="fas fa-phone mr-1 text-[10px]"></i>@(donHang.KhachHang != null ? donHang.KhachHang.SoDienThoai : "")</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-700 font-medium">
+                                    @(donHang.NgayThanhToan.HasValue ? donHang.NgayThanhToan.Value.ToString("dd/MM/yyyy") : "-")
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    @(donHang.NgayThanhToan.HasValue ? donHang.NgayThanhToan.Value.ToString("HH:mm") : "")
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <span class="text-lg font-bold text-emerald-600">
+                                    @((donHang.TongTien ?? 0).ToString("N0")) <small class="text-xs">đ</small>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if (donHang.NhanVien != null)
+                                {
+                                    <div class="text-sm text-gray-900">@donHang.NhanVien.HoTen</div>
+                                    <div class="text-[10px] text-gray-400 uppercase">ID: @donHang.NhanVien.MaNV</div>
+                                }
+                                else
+                                { <span class="text-gray-400 italic text-sm">Hệ thống</span>}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if (donHang.NhanVien1 != null)
+                                {
+                                    <div class="text-sm text-gray-900">@donHang.NhanVien1.HoTen</div>
+                                    <div class="text-[10px] text-gray-400 uppercase">ID: @donHang.NhanVien1.MaNV</div>
+                                }
+                                else
+                                { <span class="text-gray-400 italic text-sm">Chưa có</span>}
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        if (ViewBag.TotalPages > 1)
+        {
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-gray-600">Trang @ViewBag.CurrentPage / @ViewBag.TotalPages</p>
+                    <div class="flex space-x-1">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <a href="@Url.Action("LichSuDonHang", new { page = ViewBag.CurrentPage - 1, search = ViewBag.Search })"
+                               class="px-3 py-1 border rounded bg-white hover:bg-gray-100"><i class="fas fa-chevron-left"></i></a>
+                        }
+
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            if (i == ViewBag.CurrentPage)
+                            {
+                                <span class="px-3 py-1 bg-sky-500 text-white rounded font-bold">@i</span>
+                            }
+                            else if (i <= 3 || i > ViewBag.TotalPages - 3 || Math.Abs(i - (int)ViewBag.CurrentPage) <= 1)
+                            {
+                                <a href="@Url.Action("LichSuDonHang", new { page = i, search = ViewBag.Search })"
+                                   class="px-3 py-1 border rounded bg-white hover:bg-gray-100">@i</a>
+                            }
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <a href="@Url.Action("LichSuDonHang", new { page = ViewBag.CurrentPage + 1, search = ViewBag.Search })"
+                               class="px-3 py-1 border rounded bg-white hover:bg-gray-100"><i class="fas fa-chevron-right"></i></a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="p-20 text-center">
+            <i class="fas fa-history text-gray-200 text-6xl mb-4"></i>
+            <p class="text-gray-500 text-xl font-medium">Không tìm thấy lịch sử đơn hàng nào.</p>
+        </div>
+    }
+</div>

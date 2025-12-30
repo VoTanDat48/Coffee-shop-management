@@ -135,6 +135,7 @@
     <Compile Include="Controllers\AdminController_65130449.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KhachHangController_65130449.cs" />
+    <Compile Include="Controllers\NhanVienController_65130449.cs" />
     <Compile Include="Controllers\TrangChuController_65130449.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -277,6 +278,13 @@
     <Content Include="Views\KhachHangController_65130449\OrderDetails.cshtml" />
     <Content Include="Views\AccountController_65130449\ForgotPassword.cshtml" />
     <Content Include="Views\AccountController_65130449\ResetPassword.cshtml" />
+    <Content Include="Views\Shared\_LayoutNhanVien.cshtml" />
+    <Content Include="Views\NhanVienController_65130449\DuyetDon.cshtml" />
+    <Content Include="Views\NhanVienController_65130449\GiaoHang.cshtml" />
+    <Content Include="Views\NhanVienController_65130449\ChiTietDonHang.cshtml" />
+    <Content Include="Views\NhanVienController_65130449\MyAccount.cshtml" />
+    <Content Include="Views\NhanVienController_65130449\EditAccount.cshtml" />
+    <Content Include="Views\AdminController_65130449\LichSuDonHang.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

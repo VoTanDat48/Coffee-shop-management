@@ -509,6 +509,79 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             var khachHangs = query.OrderBy(kh => kh.HoTen).ToList();
             return View(khachHangs);
         }
+        // ========== LỊCH SỬ ĐƠN HÀNG ==========
+        // Chỉ hiển thị các đơn hàng đã HOÀN THÀNH để quản lý ai duyệt và ai giao
+        public ActionResult LichSuDonHang(string search, int page = 1, int pageSize = 10)
+        {
+            ViewBag.Title = "Lịch sử Đơn hàng";
+            ViewBag.Search = search;
+
+            // 1. Khởi tạo truy vấn
+            IQueryable<DonHang> query = db.DonHangs
+                .Include(dh => dh.KhachHang)
+                .Include(dh => dh.NhanVien)   // Nhân viên duyệt
+                .Include(dh => dh.NhanVien1)  // Nhân viên giao
+                .Where(dh => dh.TrangThai == "HOANTHANH");
+
+            // 2. Lọc theo từ khóa (Mã đơn hoặc Tên khách)
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string keyword = search.Trim();
+                query = query.Where(dh => dh.MaDonHang.Contains(keyword) ||
+                                         (dh.KhachHang != null && dh.KhachHang.HoTen.Contains(keyword)));
+            }
+
+            // 3. Đếm tổng số lượng để phân trang
+            int totalItems = query.Count();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // 4. Sắp xếp MỚI NHẤT lên đầu và Phân trang
+            // Sử dụng NgayThanhToan (vì là đơn hoàn thành), nếu không có thì dùng NgayDat làm dự phòng
+            var donHangs = query
+                .OrderByDescending(dh => dh.NgayThanhToan.HasValue ? dh.NgayThanhToan : dh.NgayDat)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // 5. Đẩy dữ liệu ra ViewBag
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+
+            return View(donHangs);
+        }
+
+        // GET: Chi tiết đơn hàng (Admin)
+        public ActionResult ChiTietDonHang(string id)
+        {
+            ViewBag.Title = "Chi tiết Đơn hàng";
+            
+            var donHang = db.DonHangs
+                .Include(dh => dh.KhachHang)
+                .Include(dh => dh.NhanVien)  // Nhân viên duyệt
+                .Include(dh => dh.NhanVien1) // Nhân viên giao
+                .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.SanPham))
+                .FirstOrDefault(dh => dh.MaDonHang == id);
+
+            if (donHang == null)
+            {
+                TempData["Error"] = "Không tìm thấy đơn hàng.";
+                return RedirectToAction("LichSuDonHang");
+            }
+
+            ViewBag.TrangThaiDict = new Dictionary<string, string>
+            {
+                { "CHODUYET", "Chờ duyệt" },
+                { "DANGPHACHE", "Đang pha chế" },
+                { "DANGGIAO", "Đang giao" },
+                { "HOANTHANH", "Hoàn thành" },
+                { "HUY", "Đã hủy" }
+            };
+
+            return View(donHang);
+        }
+
         // ========== THỐNG KÊ DOANH THU ==========
         public ActionResult DoanhThu(int? year, int? month)
         {

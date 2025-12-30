@@ -1,0 +1,64 @@
+﻿@model QuanLyQuanNuoc_65130449.Models.NhanVien
+@{
+    ViewBag.Title = "Thông tin cá nhân";
+    Layout = "~/Views/Shared/_LayoutNhanVien.cshtml";
+
+    string tenVaiTro = "Nhân viên";
+    if (Model.VaiTro == 1) { tenVaiTro = "Nhân viên Duyệt đơn"; }
+    else if (Model.VaiTro == 2) { tenVaiTro = "Nhân viên Giao hàng"; }
+    else if (Model.VaiTro == 3) { tenVaiTro = "Quản lý"; }
+}
+
+<div class="min-h-screen bg-transparent py-12 flex justify-center items-start">
+    <div class="w-full max-w-md px-4">
+        
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden relative">
+            <!-- Background Decoration -->
+            <div class="h-32 bg-gradient-to-r from-sky-400 to-emerald-400"></div>
+            
+            <!-- Avatar -->
+            <div class="absolute top-16 left-1/2 transform -translate-x-1/2">
+                <div class="w-32 h-32 rounded-full border-4 border-white bg-white shadow-md flex items-center justify-center overflow-hidden">
+                    <i class="fas fa-user text-6xl text-gray-300"></i>
+                </div>
+            </div>
+
+            <div class="pt-20 pb-8 px-8 text-center mt-2">
+                <h1 class="text-2xl font-bold text-gray-800">@Model.HoTen</h1>
+                <p class="text-sky-600 font-medium text-sm">@tenVaiTro</p>
+
+                <div class="mt-8 space-y-4 text-left">
+                    <div class="flex items-center p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-4">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Tên đăng nhập</p>
+                            <p class="font-medium text-gray-800">@Model.TenDangNhap</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-4">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Số điện thoại</p>
+                            <p class="font-medium text-gray-800">@(string.IsNullOrEmpty(Model.SoDienThoai) ? "Chưa cập nhật" : Model.SoDienThoai)</p>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="mt-8">
+                    <a href="@Url.Action("EditAccount", "NhanVienController_65130449")" 
+                       class="block w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-sky-200 transition transform hover:-translate-y-0.5">
+                        <i class="fas fa-edit mr-2"></i>Chỉnh sửa thông tin
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

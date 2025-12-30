@@ -52,9 +52,9 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                     case 3: // Quản lý
                         return RedirectToAction("Index", "AdminController_65130449");
                     case 1: // NV Duyệt
-                        return RedirectToAction("Processing", "Employee");
+                        return RedirectToAction("DuyetDon", "NhanVienController_65130449");
                     case 2: // NV Giao hàng
-                        return RedirectToAction("Delivery", "Employee");
+                        return RedirectToAction("GiaoHang", "NhanVienController_65130449");
                     default:
                         return RedirectToAction("Index", "KhachHangController_65130449");
                 }

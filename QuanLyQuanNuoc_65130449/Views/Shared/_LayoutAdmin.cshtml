@@ -56,6 +56,12 @@
                     <span>Khách hàng</span>
                 </a>
 
+                <a href="@Url.Action("LichSuDonHang", "AdminController_65130449")"
+                   class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-slate-700 transition @(ViewContext.RouteData.Values["action"].ToString() == "LichSuDonHang" || ViewContext.RouteData.Values["action"].ToString() == "ChiTietDonHang" ? "bg-sky-600" : "")">
+                    <i class="fas fa-history w-5"></i>
+                    <span>Lịch sử đơn hàng</span>
+                </a>
+
                 <a href="@Url.Action("DoanhThu", "AdminController_65130449")"
                    class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-slate-700 transition @(ViewContext.RouteData.Values["action"].ToString() == "DoanhThu" ? "bg-sky-600" : "")">
                     <i class="fas fa-chart-line w-5"></i>
