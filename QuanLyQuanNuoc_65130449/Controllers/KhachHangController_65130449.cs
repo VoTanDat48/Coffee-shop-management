@@ -580,76 +580,100 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 return View();
             }
 
-            try
+            // Sử dụng Transaction để đảm bảo an toàn dữ liệu
+            using (var transaction = db.Database.BeginTransaction())
             {
-                // 1. Tạo mã đơn hàng (Giữ nguyên)
-                string maDonHang = GenerateNextId("DH", id => db.DonHangs.Any(dh => dh.MaDonHang == id));
-                var donHang = new DonHang
+                try
                 {
-                    MaDonHang = maDonHang,
-                    MaKH = maKH,
-                    NgayDat = DateTime.Now,
-                    TrangThai = "CHODUYET",
-                    DiaChiGiaoHang = diaChiGiaoHang.Trim(),
-                    PhiVanChuyen = phiVanChuyen,
-                    TongTien = 0,
-                    DaThanhToan = false
-                };
-                db.DonHangs.Add(donHang);
+                    // 1. Tạo mã đơn hàng
+                    string maDonHang = GenerateNextId("DH", id => db.DonHangs.Any(dh => dh.MaDonHang == id));
 
-                // 2. XỬ LÝ CHI TIẾT ĐƠN HÀNG (Phần quan trọng nhất)
-                var chiTietGioHangs = db.ChiTietGioHangs.Where(ct => ct.MaGioHang == gioHang.MaGioHang).ToList();
+                    // Lấy danh sách chi tiết giỏ hàng
+                    var chiTietGioHangs = db.ChiTietGioHangs
+                        .Where(ct => ct.MaGioHang == gioHang.MaGioHang)
+                        .ToList();
 
-                // Tìm số thứ tự lớn nhất hiện tại của CTDH trong DB để làm mốc bắt đầu
-                var lastCTDH = db.ChiTietDonHangs.OrderByDescending(c => c.MaCTDH).FirstOrDefault();
-                int lastNum = 0;
-                if (lastCTDH != null)
-                {
-                    int.TryParse(lastCTDH.MaCTDH.Substring(4), out lastNum);
-                }
+                    decimal tongTienSanPham = chiTietGioHangs.Sum(ct => ct.SoLuong * ct.DonGiaLucThem);
 
-                int i = 1;
-                foreach (var ctgh in chiTietGioHangs)
-                {
-                    // Tạo mã CTDH mới dựa trên lastNum + i
-                    string maCTDH = "CTDH" + (lastNum + i).ToString("D4");
-
-                    db.ChiTietDonHangs.Add(new ChiTietDonHang
+                    var donHang = new DonHang
                     {
-                        MaCTDH = maCTDH,
                         MaDonHang = maDonHang,
-                        MaSP = ctgh.MaSP,
-                        SoLuong = ctgh.SoLuong,
-                        DonGia = ctgh.DonGiaLucThem
-                    });
+                        MaKH = maKH,
+                        NgayDat = DateTime.Now,
+                        TrangThai = "CHODUYET",
+                        DiaChiGiaoHang = diaChiGiaoHang.Trim(),
+                        PhiVanChuyen = phiVanChuyen,
+                        TongTien = tongTienSanPham + phiVanChuyen, // Tổng tiền bao gồm phí ship
+                        DaThanhToan = false
+                    };
+                    db.DonHangs.Add(donHang);
 
-                    db.ChiTietGioHangs.Remove(ctgh);
-                    i++; // Tăng biến đếm để mã tiếp theo không bị trùng
+                    // 2. XỬ LÝ CHI TIẾT ĐƠN HÀNG (Sửa lỗi Lambda Statement Body)
+                    // Lấy danh sách ID về RAM trước để xử lý chuỗi
+                    var allCtdhIds = db.ChiTietDonHangs
+                        .Select(c => c.MaCTDH)
+                        .Where(id => id.StartsWith("CTDH"))
+                        .AsEnumerable(); // Quan trọng: Đưa về xử lý trên C#
+
+                    int lastNum = allCtdhIds
+                        .Select(id => {
+                            int n;
+                            return (id.Length > 4 && int.TryParse(id.Substring(4), out n)) ? n : 0;
+                        })
+                        .DefaultIfEmpty(0)
+                        .Max();
+
+                    int i = 1;
+                    foreach (var ctgh in chiTietGioHangs)
+                    {
+                        // Tạo mã CTDH mới: CTDH0001, CTDH0002...
+                        string maCTDH = "CTDH" + (lastNum + i).ToString("D4");
+
+                        db.ChiTietDonHangs.Add(new ChiTietDonHang
+                        {
+                            MaCTDH = maCTDH,
+                            MaDonHang = maDonHang,
+                            MaSP = ctgh.MaSP,
+                            SoLuong = ctgh.SoLuong,
+                            DonGia = ctgh.DonGiaLucThem
+                        });
+
+                        // Xóa món này khỏi giỏ hàng
+                        db.ChiTietGioHangs.Remove(ctgh);
+                        i++;
+                    }
+
+                    // Xóa đầu mục giỏ hàng
+                    db.GioHangs.Remove(gioHang);
+
+                    // Lưu tất cả thay đổi
+                    db.SaveChanges();
+
+                    // Xác nhận hoàn tất giao dịch
+                    transaction.Commit();
+
+                    TempData["Success"] = "Đặt hàng thành công!";
+                    return RedirectToAction("MyOrders");
                 }
+                catch (Exception ex)
+                {
+                    // Nếu có lỗi, hủy bỏ mọi thay đổi đã thực hiện trong try
+                    transaction.Rollback();
 
-                db.GioHangs.Remove(gioHang);
-                db.SaveChanges(); // Lưu tất cả vào DB cùng một lúc
-
-                TempData["Success"] = "Đặt hàng thành công!";
-                return RedirectToAction("MyOrders");
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "Lỗi: " + (ex.InnerException?.InnerException?.Message ?? ex.Message);
-                PrepareCheckoutData(maKH, gioHang);
-                return View();
+                    TempData["Error"] = "Lỗi hệ thống: " + (ex.InnerException?.InnerException?.Message ?? ex.Message);
+                    PrepareCheckoutData(maKH, gioHang);
+                    return View();
+                }
             }
         }
 
-        // Hàm bổ trợ nạp dữ liệu cho View
+        // Hàm bổ trợ nạp dữ liệu cho View (Giữ nguyên)
         private void PrepareCheckoutData(string maKH, GioHang gioHang)
         {
-            // Lấy thông tin khách hàng (bao gồm số điện thoại)
             ViewBag.KhachHang = db.KhachHangs.Find(maKH);
 
             if (gioHang != null)
             {
-                // Include Sản phẩm để View lấy được HinhAnh và TenSP
                 var chiTiet = db.ChiTietGioHangs
                                 .Include(ct => ct.SanPham)
                                 .Where(ct => ct.MaGioHang == gioHang.MaGioHang)
@@ -662,7 +686,7 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 ViewBag.TongThanhToan = tongTien + 15000;
             }
         }
-    
+
 
         // GET: Xem đơn hàng
         public ActionResult MyOrders()
