@@ -9,6 +9,7 @@ using System.Data.Entity;
 
 namespace QuanLyQuanNuoc_65130449.Controllers
 {
+    [AdminAuthorize]
     public class AdminController_65130449Controller : Controller
     {
         private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities db = 

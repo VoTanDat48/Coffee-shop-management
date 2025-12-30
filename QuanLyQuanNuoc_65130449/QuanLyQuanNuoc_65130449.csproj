@@ -127,6 +127,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AdminAuthorize.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -274,10 +275,13 @@
     <Content Include="Views\KhachHangController_65130449\MyOrders.cshtml" />
     <Content Include="Views\KhachHangController_65130449\Checkout.cshtml" />
     <Content Include="Views\KhachHangController_65130449\OrderDetails.cshtml" />
+    <Content Include="Views\AccountController_65130449\ForgotPassword.cshtml" />
+    <Content Include="Views\AccountController_65130449\ResetPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Images\" />
+    <Folder Include="Views\AdminAuthorize\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

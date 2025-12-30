@@ -58,9 +58,14 @@
                            placeholder="Nhập mật khẩu" required />
                 </div>
 
-                <div class="flex items-center mt-3 justify-end">
-                    <input type="checkbox" id="ShowPass" class="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 mr-2" onclick="togglePassword()" />
-                    <label for="ShowPass" class="text-gray-600 text-sm cursor-pointer">Hiện mật khẩu</label>
+                <div class="flex items-center mt-3 justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="ShowPass" class="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 mr-2" onclick="togglePassword()" />
+                        <label for="ShowPass" class="text-gray-600 text-sm cursor-pointer">Hiện mật khẩu</label>
+                    </div>
+                    <a href="@Url.Action("ForgotPassword", "AccountController_65130449")" class="text-sm text-sky-600 hover:text-sky-700 hover:underline transition">
+                        Quên mật khẩu?
+                    </a>
                 </div>
             </div>
 

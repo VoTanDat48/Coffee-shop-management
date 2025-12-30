@@ -1,15 +1,16 @@
-﻿using System;
+﻿using QuanLyQuanNuoc_65130449.Models;
+using System;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using QuanLyQuanNuoc_65130449.Models; // Namespace chứa NhanVien, KhachHang
 
 namespace QuanLyQuanNuoc_65130449.Controllers
 {
     public class AccountController_65130449Controller : Controller
     {
-        // DbContext sinh ra từ Entity Framework (tên hiện tại: QuanLyQuanNuocWindy_65130449Entities)
         private QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities db =
             new QuanLyQuanNuoc_65130449.Models.QuanLyQuanNuocWindy_65130449Entities();
 
@@ -30,48 +31,56 @@ namespace QuanLyQuanNuoc_65130449.Controllers
                 return View();
             }
 
-            // Kiểm tra Nhân viên
+            // 1. KIỂM TRA NHÂN VIÊN
             var nhanVien = db.NhanViens
                              .FirstOrDefault(nv => nv.TenDangNhap == TenDangNhap && nv.MatKhau == MatKhau);
 
             if (nhanVien != null)
             {
+                // Thiết lập Cookie đăng nhập
                 FormsAuthentication.SetAuthCookie(nhanVien.TenDangNhap, false);
 
-                // Phân quyền theo Vai trò (1: NV Duyệt, 2: NV Giao hàng, 3: Quản lý)
+                // QUAN TRỌNG: Lưu vai trò Admin/NhanVien vào Session để bảo mật trang quản lý
+                Session["UserRole"] = "Admin";
+                Session["MaNV"] = nhanVien.MaNV;
+                Session["HoTen"] = nhanVien.HoTen;
+                Session["VaiTro"] = nhanVien.VaiTro;
+
+                // Phân quyền điều hướng trang sau khi đăng nhập
                 switch (nhanVien.VaiTro)
                 {
-                    case 3: // Quản lý/Admin
-                        return RedirectToAction("Index", "AdminController_65130449"); // Trang quản lý tổng
-                    case 1: // Nhân viên Duyệt
-                        return RedirectToAction("Processing", "Employee"); // Trang duyệt đơn
-                    case 2: // Nhân viên Giao hàng
-                        return RedirectToAction("Delivery", "Employee"); // Trang giao hàng
+                    case 3: // Quản lý
+                        return RedirectToAction("Index", "AdminController_65130449");
+                    case 1: // NV Duyệt
+                        return RedirectToAction("Processing", "Employee");
+                    case 2: // NV Giao hàng
+                        return RedirectToAction("Delivery", "Employee");
                     default:
-                        ModelState.AddModelError("", "Vai trò không hợp lệ.");
-                        return View();
+                        return RedirectToAction("Index", "KhachHangController_65130449");
                 }
             }
 
-
-            // Kiểm tra Khách hàng
-            var khachHang = db.KhachHangs
-                              .FirstOrDefault(kh => kh.TenDangNhap == TenDangNhap && kh.MatKhau == MatKhau);
-
+            // --- BƯỚC 2: NẾU KHÔNG PHẢI NHÂN VIÊN, KIỂM TRA BẢNG KHÁCH HÀNG ---
+            var khachHang = db.KhachHangs.FirstOrDefault(kh => kh.TenDangNhap == TenDangNhap && kh.MatKhau == MatKhau);
             if (khachHang != null)
             {
-                FormsAuthentication.SetAuthCookie(khachHang.HoTen, false);
+                FormsAuthentication.SetAuthCookie(khachHang.TenDangNhap, false);
+                Session["UserRole"] = "Customer";
+                Session["MaKH"] = khachHang.MaKH;
+                Session["HoTen"] = khachHang.HoTen;
 
-                // ✅ Lưu thông tin vào Session để layout hiển thị đúng
-                Session["UserRole"] = "khachhang"; // Phân quyền
-                Session["MaKH"] = khachHang.MaKH; // Lưu ID khách hàng
-                Session["Hoten"] = khachHang.HoTen;     // Lưu tên hiển thị
+                // Ưu tiên quay lại trang khách hàng đang xem dở
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
 
+                
                 return RedirectToAction("Index", "KhachHangController_65130449");
             }
 
-
-            ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng.");
+            // --- BƯỚC 3: THẤT BẠI ---
+            ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không chính xác.");
             return View();
         }
 
@@ -80,7 +89,8 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         public ActionResult LogOff()
         {
             FormsAuthentication.SignOut();
-            Session.Clear();
+            Session.Clear(); // Xóa sạch Session (Role, MaKH, HoTen...)
+            Session.Abandon();
             return RedirectToAction("Index", "TrangChuController_65130449");
         }
 
@@ -89,57 +99,43 @@ namespace QuanLyQuanNuoc_65130449.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(KhachHang model, string XacNhanMatKhau)
         {
-            // 1. Kiểm tra các trường bắt buộc
-            if (string.IsNullOrEmpty(model.HoTen) ||
-                string.IsNullOrEmpty(model.TenDangNhap) ||
-                string.IsNullOrEmpty(model.MatKhau) ||
-                string.IsNullOrEmpty(model.Email))
+            if (string.IsNullOrEmpty(model.HoTen) || string.IsNullOrEmpty(model.TenDangNhap) ||
+                string.IsNullOrEmpty(model.MatKhau) || string.IsNullOrEmpty(model.Email))
             {
                 ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin bắt buộc.");
                 return View(model);
             }
 
-            // 2. Kiểm tra xác nhận mật khẩu
             if (model.MatKhau != XacNhanMatKhau)
             {
-                ModelState.AddModelError("XacNhanMatKhau", "Mật khẩu và xác nhận mật khẩu không khớp.");
+                ModelState.AddModelError("XacNhanMatKhau", "Mật khẩu xác nhận không khớp.");
                 return View(model);
             }
 
-            // 3. Kiểm tra trùng tên đăng nhập hoặc email
             if (db.KhachHangs.Any(kh => kh.TenDangNhap == model.TenDangNhap))
             {
                 ModelState.AddModelError("TenDangNhap", "Tên đăng nhập đã tồn tại.");
                 return View(model);
             }
-            if (db.KhachHangs.Any(kh => kh.Email == model.Email))
-            {
-                ModelState.AddModelError("Email", "Email đã được đăng ký.");
-                return View(model);
-            }
 
-            // 4. Tự động tạo mã khách hàng mới (KH0001, KH0002, ...)
+            // Tự động tạo mã KH (Giữ nguyên logic của bạn)
             var lastKhachHang = db.KhachHangs.OrderByDescending(kh => kh.MaKH).FirstOrDefault();
             string newMaKH = "KH0001";
-            
             if (lastKhachHang != null && lastKhachHang.MaKH.StartsWith("KH"))
             {
-                // Lấy số từ mã cuối cùng
                 string numberPart = lastKhachHang.MaKH.Substring(2);
                 if (int.TryParse(numberPart, out int lastNumber))
                 {
-                    int newNumber = lastNumber + 1;
-                    newMaKH = "KH" + newNumber.ToString("D4"); // D4 để format 0001, 0002, ...
+                    newMaKH = "KH" + (lastNumber + 1).ToString("D4");
                 }
             }
-            
             model.MaKH = newMaKH;
 
-            // 5. Lưu vào database
             db.KhachHangs.Add(model);
             db.SaveChanges();
 
@@ -147,13 +143,103 @@ namespace QuanLyQuanNuoc_65130449.Controllers
             return RedirectToAction("Login");
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+
+        // 1. Giao diện nhập Email
+        [HttpGet]
+        public ActionResult ForgotPassword()
         {
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return View();
+        }
+
+        // 2. Xử lý gửi mail OTP
+        [HttpPost]
+        public ActionResult ForgotPassword(string Email)
+        {
+            var kh = db.KhachHangs.FirstOrDefault(x => x.Email == Email);
+            if (kh == null)
             {
-                return Redirect(returnUrl);
+                ModelState.AddModelError("", "Email không tồn tại trong hệ thống.");
+                return View();
             }
-            return RedirectToAction("Index", "TrangChu_65130449");
+
+            string otp = new Random().Next(100000, 999999).ToString();
+            Session["OTP"] = otp;
+            Session["ResetEmail"] = Email;
+
+            try
+            {
+                // CHÚ Ý: Đã sửa lại định dạng email tại đây
+                var fromAddress = new MailAddress("votandat4825@gmail.com", "Windy Coffee");
+                var toAddress = new MailAddress(Email.Trim());
+                string fromPassword = "htap ygmb vflq orio";
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+                };
+
+                using (var message = new MailMessage(fromAddress, toAddress)
+                {
+                    Subject = "Mã xác nhận đổi mật khẩu - Windy Coffee",
+                    Body = $"Mã OTP của bạn là: {otp}. Đừng chia sẻ mã này cho ai."
+                })
+                {
+                    smtp.Send(message);
+                }
+                return RedirectToAction("ResetPassword");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi gửi mail: " + ex.Message);
+                return View();
+            }
+        }
+
+        // 3. Giao diện đổi mật khẩu mới
+        [HttpGet]
+        public ActionResult ResetPassword()
+        {
+            if (Session["OTP"] == null) return RedirectToAction("ForgotPassword");
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ResetPassword(string OTPConfirm, string MatKhauMoi, string XacNhanMatKhau)
+        {
+            if (OTPConfirm != Session["OTP"].ToString())
+            {
+                ModelState.AddModelError("", "Mã OTP không chính xác.");
+                return View();
+            }
+
+            if (MatKhauMoi != XacNhanMatKhau)
+            {
+                ModelState.AddModelError("", "Mật khẩu xác nhận không khớp.");
+                return View();
+            }
+
+            string email = Session["ResetEmail"].ToString();
+            var kh = db.KhachHangs.FirstOrDefault(x => x.Email == email);
+
+            if (kh != null)
+            {
+                kh.MatKhau = MatKhauMoi; // Cập nhật pass mới
+                db.SaveChanges();
+
+                // Xóa Session sau khi xong
+                Session.Remove("OTP");
+                Session.Remove("ResetEmail");
+
+                TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+                return RedirectToAction("Login");
+            }
+
+            return View();
         }
     }
 }

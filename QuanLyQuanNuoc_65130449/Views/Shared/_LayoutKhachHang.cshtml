@@ -49,13 +49,13 @@
 
                     <!-- Tài khoản hoặc Đăng nhập -->
                     <div class="relative ml-2">
-                        @if (Session["UserRole"]?.ToString() == "khachhang")
+                        @if (Session["UserRole"]?.ToString() == "Customer")
                         {
                             <!-- Hiển thị tên tài khoản -->
                             <button id="userMenuButton"
                                     class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-sky-600 hover:bg-sky-50 rounded-lg font-medium focus:outline-none transition">
                                 <i class="fas fa-user-circle text-xl"></i>
-                                <span>@Session["UserName"]</span>
+                                <span>@(Session["HoTen"]?.ToString() ?? "Tài khoản")</span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
 
@@ -71,7 +71,7 @@
                                     <i class="fas fa-receipt mr-2"></i>Đơn hàng
                                 </a>
                                 <div class="border-t my-1"></div>
-                                @using (Html.BeginForm("Index", "TrangChuController_65130449", FormMethod.Post))
+                                @using (Html.BeginForm("LogOff", "AccountController_65130449", FormMethod.Post))
                                 {
                                     @Html.AntiForgeryToken()
                                     <button type="submit"
